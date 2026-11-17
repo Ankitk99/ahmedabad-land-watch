@@ -226,7 +226,7 @@ table.cmp{min-width:0;width:auto;table-layout:fixed}
     <p class="lede">A weekly record of where the government and large companies are spending around Ahmedabad, what land costs in each locality, and what is only market talk. Technical facts come first. Each one is followed by the same point in plain words.</p>
   </header>
 
-  <nav class="secbar" aria-label="Page sections"><div class="secin"><a href="#brief">This week</a><a href="#map">Map</a><a href="#compare">Compare<span id="cmp-n"></span></a><a href="#prices">Prices</a><a href="#funds">Local funds</a><a href="#coverage">Sources</a></div></nav>
+  <nav class="secbar" aria-label="Page sections"><div class="secin"><a href="#plots">Plots</a><a href="#brief">This week</a><a href="#map">Map</a><a href="#compare">Compare<span id="cmp-n"></span></a><a href="#prices">Prices</a><a href="#funds">Local funds</a><a href="#coverage">Sources</a></div></nav>
 
   <section aria-labelledby="h-key">
     <div class="findings"><h2 id="h-key">Key findings</h2><ol id="findings"></ol></div>
@@ -237,6 +237,15 @@ table.cmp{min-width:0;width:auto;table-layout:fixed}
       <div><b>Most prices are asking prices</b>They come from property portals, which run high. Government auction results and official GIDC rates are marked separately because they are real transactions or official figures.</div>
     </div>
     </details>
+  </section>
+
+  <section id="plots" aria-labelledby="h-plots">
+    <h2 id="h-plots">Residential plots</h2>
+    <p class="sec-note">The four kinds of residential plot on sale around Ahmedabad, what proves each one can be built on, and the usual traps. Plot prices on this page are per square yard, the unit sellers use.</p>
+    <div class="claims" id="plotkinds"></div>
+    <h3 style="margin-top:6px">Plotted schemes</h3>
+    <p class="sec-note" id="schemes-note"></p>
+    <div class="tablewrap" id="schemes-wrap"><table><thead><tr><th>Scheme</th><th>Where</th><th>Kind</th><th>Plot sizes</th><th class="num">Price per sq yd</th><th>Stage</th><th>Source</th></tr></thead><tbody id="t-schemes"></tbody></table></div>
   </section>
 
   <section id="brief" aria-labelledby="h-brief">
@@ -271,12 +280,12 @@ table.cmp{min-width:0;width:auto;table-layout:fixed}
       </div>
       <aside class="panel" id="panel" aria-live="polite"></aside>
     </div>
-    <p class="small muted">Tap any zone, line or dot for details; drag to move and pinch to zoom. The page link changes to the place you pick, so Share, then Copy link, sends that exact view. Coloured zones show the going rate per square foot for the property type you pick. Circles are research areas, lines are transport projects and diamonds are single sites. The satellite image is from 2025 and is sharp to about 10 metres, enough to see roads, fields and built-up blocks but not single houses. Each panel has a link that opens the same spot in Google Maps satellite view for a closer look. Price zones are drawn around each locality's centre. They are not official boundaries.</p>
+    <p class="small muted">Tap any zone, line or dot for details; drag to move and pinch to zoom. The page link changes to the place you pick, so Share, then Copy link, sends that exact view. Coloured zones show the going rate for the property type you pick: plots per square yard, everything else per square foot. Circles are research areas, lines are transport projects and diamonds are single sites. The satellite image is from 2025 and is sharp to about 10 metres, enough to see roads, fields and built-up blocks but not single houses. Each panel has a link that opens the same spot in Google Maps satellite view for a closer look. Price zones are drawn around each locality's centre. They are not official boundaries.</p>
   </section>
 
   <section id="compare" aria-labelledby="h-cmp">
     <h2 id="h-cmp">Compare places</h2>
-    <p class="sec-note">Pick up to three places with "Add to compare" on the map. Prices are per square foot. For a research area, each price comes from the nearest locality that has one, named underneath.</p>
+    <p class="sec-note">Pick up to three places with "Add to compare" on the map. Plot prices are per square yard and other prices per square foot. For a research area, each price comes from the nearest locality that has one, named underneath.</p>
     <div id="cmp-body"></div>
   </section>
 
@@ -369,8 +378,12 @@ const big = n => n >= 1e7 ? +(n / 1e7).toFixed(2) + ' crore' : n >= 1e5 ? +(n / 
 /* ---------- prices ---------- */
 const LOC = L.loc.map((l, i) => ({...l, i, ll: G.ll[l.n] || l.ll}));
 const perFt = p => { const d = L.units[p.u].d, v = Array.isArray(p.v) ? p.v : [p.v, p.v]; return [v[0] / d, v[1] / d]; };
-const val = (l, t) => { const p = l.p.find(p => p.t === t); if (!p) return null; const [a, b] = perFt(p); return (a + b) / 2; };
-const ftTxt = p => { const [a, b] = perFt(p); return a === b ? `₹${inr(a)}` : `₹${inr(a)}–${inr(b)}`; };
+/* plots are shown per sq yd, the unit Gujarat plot listings use; everything else per sq ft */
+const SC = t => t === 'plot' ? 9 : 1, UN = t => t === 'plot' ? 'sq yd' : 'sq ft';
+const val = (l, t) => { const p = l.p.find(p => p.t === t); if (!p) return null; const [a, b] = perFt(p); return (a + b) / 2 * SC(t); };
+const ftTxt = p => { const [a, b] = perFt(p).map(x => x * SC(p.t)); return a === b ? `₹${inr(a)}` : `₹${inr(a)}–${inr(b)}`; };
+const PK = {na:'NA or TP final plot', tp:'TP final plot', rera:'RERA plotted scheme', dholera:'Dholera TP plot', farm:'Farmhouse plot'};
+const pkPill = p => p.pk && PK[p.pk] ? ` <span class="pill" style="color:var(--muted)">${PK[p.pk]}</span>` : '';
 const rawTxt = p => p.u === 'ft' ? '' : `₹${Array.isArray(p.v) ? big(p.v[0]) + '–' + big(p.v[1]) : big(p.v)} per ${L.units[p.u].n}`;
 const shortP = v => v >= 1000 ? '₹' + (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k' : '₹' + Math.round(v);
 const TYPES = Object.keys(L.types), RAMP = ['var(--z1)', 'var(--z2)', 'var(--z3)', 'var(--z4)', 'var(--z5)'];
@@ -394,7 +407,8 @@ const PRESETS = [
 ];
 const RIVER = [[23.42,72.72],[23.30,72.69],[23.22,72.668],[23.165,72.668],[23.13,72.655],[23.095,72.63],[23.075,72.60],[23.06,72.585],[23.022,72.572],[22.99,72.55],[22.85,72.50],[22.70,72.47],[22.55,72.43],[22.30,72.38],[22.12,72.36]];
 const svg = $('svg'), gOver = $('g-over'), NS = 'http://www.w3.org/2000/svg';
-const S = {cx:0, cy:0, w:100, sel:null, preset:'city', type:'flat'};
+/* the map opens on plots once enough localities have a plot price; until then flats give a fuller first view */
+const S = {cx:0, cy:0, w:100, sel:null, preset:'city', type: BREAKS.plot && BREAKS.plot.n >= 40 ? 'plot' : 'flat'};
 const size = () => [svg.clientWidth || 600, svg.clientHeight || 600];
 const sat = () => $('l-sat').checked && G.sat.length > 0;
 function fit(box){
@@ -549,7 +563,7 @@ const fundForLoc = name => { const m = seatOfLoc(name); return m ? fundBlock(m[0
 const gapN = l => {
   const j = l.p.find(p => p.t === 'jan'), ask = l.p.find(p => p.t === 'plot' || p.t === 'farm');
   if (!j || !ask || /farmland class only/.test(j.note || '')) return null;
-  const n = val(l, ask.t) / val(l, 'jan'); return n >= 1.2 ? n : null;
+  const n = val(l, ask.t) / SC(ask.t) / val(l, 'jan'); return n >= 1.2 ? n : null;
 };
 const xTxt = n => n >= 10 ? Math.round(n) : n.toFixed(1);
 const gapTxt = l => { const n = gapN(l); return n ? ` <b>Sellers ask about ${xTxt(n)} times the official land value here.</b>` : ''; };
@@ -563,17 +577,17 @@ const basisShort = k => /^Official/.test(k) ? 'official' : /^Actual/.test(k) ? '
 function panel(){
   const s = S.sel, el = $('panel');
   if (!s){
-    el.innerHTML = `<p class="eyebrow">How to read the map</p><h3>Prices and five growth corridors</h3><p class="muted">Darker pink zones cost more per square foot for the property type chosen above the map. Circles are the research areas, coloured by corridor. Lines are transport projects: solid means open, dashed means under construction, dotted means approved or planned. Diamonds are single sites such as factories and stadiums.</p><div class="corr">` +
+    el.innerHTML = `<p class="eyebrow">How to read the map</p><h3>Prices and five growth corridors</h3><p class="muted">Darker pink zones cost more for the property type chosen above the map: plots per square yard, everything else per square foot. Circles are the research areas, coloured by corridor. Lines are transport projects: solid means open, dashed means under construction, dotted means approved or planned. Diamonds are single sites such as factories and stadiums.</p><div class="corr">` +
       Object.entries(D.corridors).map(([k, c]) => `<div><span class="dot" style="background:var(--c${k})"></span><b>${esc(c.name)}</b><p>${esc(c.why)}</p></div>`).join('') + `</div>`;
     return;
   }
   if (s.kind === 'l'){
     const l = LOC[s.id], ar = D.areas.map(a => [Math.hypot((a.lat - l.ll[0]) * 110.6, (a.lng - l.ll[1]) * 102.5), a]).sort((a, b) => a[0] - b[0])[0];
     el.innerHTML = `<p class="eyebrow">${esc(l.z)} · prices as of ${esc(L.asof)}</p><h3>${esc(l.n)}</h3>${cmpBtn('l:' + s.id)}` +
-      (l.p.length ? `<div class="ptable">${l.p.map(p => { const sr = L.src[p.s]; return `<div><div class="row"><span>${esc(L.types[p.t].n)}</span><span class="big">${ftTxt(p)} <span class="small muted" style="font-weight:400">/ sq ft</span></span></div>
-        <div class="row small muted"><span>${kpill(sr.k)}${p.ch != null ? ` · ${p.ch > 0 ? '+' : ''}${p.ch}% in 5 years` : ''}</span><span class="num">${esc(rawTxt(p))}</span></div>
+      (l.p.length ? `<div class="ptable">${l.p.map(p => { const sr = L.src[p.s]; return `<div><div class="row"><span>${esc(L.types[p.t].n)}</span><span class="big">${ftTxt(p)} <span class="small muted" style="font-weight:400">/ ${UN(p.t)}</span></span></div>
+        <div class="row small muted"><span>${kpill(sr.k)}${pkPill(p)}${p.ch != null ? ` · ${p.ch > 0 ? '+' : ''}${p.ch}% in 5 years` : ''}</span><span class="num">${esc(rawTxt(p))}</span></div>
         ${p.note ? `<p class="small">${esc(p.note)}</p>` : ''}<p class="srcs"><a href="${sr.u}" target="_blank" rel="noopener">${esc(sr.t)}</a></p></div>`; }).join('')}</div>
-        <p class="plain"><b>In plain words:</b> an asking price is what sellers hope to get. An official rate or an actual sale is firmer. All figures are per square foot so that flats, plots and farmland can be compared side by side.${gapTxt(l)}</p>`
+        <p class="plain"><b>In plain words:</b> an asking price is what sellers hope to get. An official rate or an actual sale is firmer. Plots are per square yard, the unit plot sellers use (1 sq yd is 9 sq ft). Everything else is per square foot.${gapTxt(l)}</p>`
         : `<p class="muted">No price has been collected for this place yet. It is on the list for a later weekly update.</p>`) +
       fundForLoc(l.n) +
       (ar[0] <= 9 ? `<h4>Research area</h4><ul class="drv"><li><button type="button" data-go="a:${ar[1].id}"><span><span class="dot" style="background:var(--c${ar[1].corridor})"></span> ${esc(ar[1].name)}</span><span class="muted small">${esc(ar[1].stage)}</span></button></li></ul>` : '') +
@@ -584,7 +598,7 @@ function panel(){
       <dl class="facts"><dt>Stage</dt><dd>${esc(a.stage)}</dd><dt>Price</dt><dd>${esc(a.price)}${a.basis ? `<br><span class="muted small">${esc(a.basis)}</span>` : ''}</dd>
       <dt>You can buy</dt><dd>${fmt(a.types)}</dd><dt>Distance</dt><dd>${kmFromCentre(a)} km from city centre</dd><dt>Research</dt><dd>${esc(a.status)}</dd></dl>
       <h4>What is happening</h4><p>${fmt(a.summary)}</p><p class="plain"><b>In plain words:</b> ${fmt(a.plain)}</p>
-      ${nb.length ? `<h4>Prices nearby, per sq ft</h4><ul class="drv">${nb.map(([d, l]) => `<li><button type="button" data-go="l:${l.i}"><span>${esc(l.n)}</span><span class="muted small num">${l.p.slice(0, 2).map(p => L.types[p.t].n.split(' ')[0] + ' ' + ftTxt(p)).join(' · ')}</span></button></li>`).join('')}</ul>` : ''}
+      ${nb.length ? `<h4>Prices nearby (plots per sq yd, others per sq ft)</h4><ul class="drv">${nb.map(([d, l]) => `<li><button type="button" data-go="l:${l.i}"><span>${esc(l.n)}</span><span class="muted small num">${l.p.slice(0, 2).map(p => L.types[p.t].n.split(' ')[0] + ' ' + ftTxt(p)).join(' · ')}</span></button></li>`).join('')}</ul>` : ''}
       ${fundForArea(a.id)}
       <h4>Projects driving it</h4><ul class="drv">${a.drivers.map(id => `<li><button type="button" data-go="p:${id}"><span>${esc(P[id].name)}</span>${pill(P[id].status)}</button></li>`).join('')}</ul>
       <h4>Risks</h4><p>${fmt(a.risks)}</p><h4>Next check</h4><p>${fmt(a.next)}</p>
@@ -639,9 +653,9 @@ $('findings').innerHTML = (D.findings || []).map(f => `<li>${fmt(f.t)}${(f.refs 
 $('t-areas').innerHTML = D.areas.map(a => `<tr class="pick" data-jump="a:${a.id}" tabindex="0"><td><span class="dot" style="background:var(--c${a.corridor})"></span>${esc(a.name)}</td><td>${esc(a.stage)}</td><td class="num">${kmFromCentre(a)}</td><td>${esc(a.price)}</td><td>${fmt(a.types)}</td><td>${esc(a.status)}</td></tr>`).join('');
 $('t-proj').innerHTML = D.projects.map(p => `<tr class="pick" data-jump="p:${p.id}" tabindex="0"><td>${esc(p.name)}</td><td>${pill(p.status)}</td><td>${esc(p.date)}</td><td>${fmt(p.plain)}</td></tr>`).join('');
 $('prices-note').textContent = `${L.note} ${LOC.filter(l => l.p.length).length} localities, as of ${L.asof}. Select a row to open it on the map. A dash means no figure has been found yet.`;
-$('t-ph').innerHTML = `<tr><th>Locality</th>${TYPES.map(t => `<th class="num">${esc(L.types[t].n)}</th>`).join('')}</tr>`;
+$('t-ph').innerHTML = `<tr><th>Locality</th>${TYPES.map(t => `<th class="num">${esc(L.types[t].n)}<br>per ${UN(t)}</th>`).join('')}</tr>`;
 { let h = '', z = ''; const zi = [...new Set(LOC.map(l => l.z))];
-  for (const l of [...LOC].sort((a, b) => zi.indexOf(a.z) - zi.indexOf(b.z) || (val(b, 'flat') || 0) - (val(a, 'flat') || 0))){
+  for (const l of [...LOC].sort((a, b) => zi.indexOf(a.z) - zi.indexOf(b.z) || (val(b, 'plot') || 0) - (val(a, 'plot') || 0) || (val(b, 'flat') || 0) - (val(a, 'flat') || 0))){
     if (l.z !== z){ z = l.z; h += `<tr class="grp"><td colspan="${TYPES.length + 1}">${esc(z)}</td></tr>`; }
     h += `<tr class="pick" data-jump="l:${l.i}" tabindex="0"><td>${esc(l.n)}</td>${TYPES.map(t => { const p = l.p.find(p => p.t === t); return `<td class="num">${p ? ftTxt(p) : '–'}</td>`; }).join('')}</tr>`; }
   $('t-prices').innerHTML = h; }
@@ -676,7 +690,7 @@ function cmpInfo(ref){
   if (k === 'l'){ const l = LOC[id]; if (!l) return null;
     const ar = D.areas.map(a => [Math.hypot((a.lat - l.ll[0]) * 110.6, (a.lng - l.ll[1]) * 102.5), a]).sort((a, b) => a[0] - b[0])[0], sm = seatOfLoc(l.n), g = gapN(l);
     return {ref, name: l.n, sub: l.z, km: kmFromCentre({lat: l.ll[0], lng: l.ll[1]}), area: ar[0] <= 9 ? ar[1] : null, seat: sm ? sm[0] : null, gap: g ? [g, ''] : null,
-      price: t => { const p = l.p.find(p => p.t === t); return p ? [ftTxt(p), basisShort(L.src[p.s].k)] : null; }};
+      price: t => { const p = l.p.find(p => p.t === t); return p ? [ftTxt(p), basisShort(L.src[p.s].k) + (p.pk ? ', ' + PK[p.pk] : '')] : null; }};
   }
   if (k === 'a'){ const a = A[id]; if (!a) return null; const nb = near(a.lat, a.lng, 8), gl = nb.find(([d, l]) => gapN(l));
     return {ref, name: a.name, sub: D.corridors[a.corridor].name.split(':')[0] + ' corridor', km: kmFromCentre(a), area: a, seat: (FD && FD.areaSeat[a.id] || [])[0] || null, gap: gl ? [gapN(gl[1]), gl[1].n] : null,
@@ -690,7 +704,7 @@ function renderCompare(){
   if (!cols.length){ $('cmp-body').innerHTML = `<div class="empty"><p>Nothing to compare yet. Open any place on the map and choose "Add to compare".</p><div class="tools" style="margin-top:10px"><button type="button" class="btn" data-cmp-try>Try Shela, GIFT City and Dholera</button></div></div>`; return; }
   const rows = [
     ['Where', c => `${esc(c.sub)}<span class="small muted">${c.km} km from the city centre</span>`],
-    ...TYPES.map(t => [L.types[t].n, c => { const v = c.price(t); return v ? `<b class="num">${v[0]}</b><span class="small muted">${esc(v[1])}</span>` : dash; }]),
+    ...TYPES.map(t => [L.types[t].n + ', per ' + UN(t), c => { const v = c.price(t); return v ? `<b class="num">${v[0]}</b><span class="small muted">${esc(v[1])}</span>` : dash; }]),
     ['Sellers ask vs official', c => c.gap ? `<b>${xTxt(c.gap[0])} times</b>${c.gap[1] ? `<span class="small muted">at ${esc(c.gap[1])}</span>` : ''}` : dash],
     ['Stage', c => c.area ? `${esc(c.area.stage)}<span class="small muted">${esc(c.area.short)} research area</span>` : dash],
     ['Projects nearby', c => c.area ? c.area.drivers.slice(0, 3).map(id => `${esc(P[id].name.split(' (')[0])}<span class="small muted">${esc(P[id].status)}</span>`).join('') : dash],
@@ -734,6 +748,12 @@ $('pfind').addEventListener('input', e => {
 });
 
 $('claims').innerHTML = L.claims.map(c => `<article><span class="when">${esc(c.who)}</span><h3>${esc(c.h)}</h3><p>${esc(c.body)}</p><p class="plain"><b>What a check found:</b> ${esc(c.check)}</p><div class="chips">${kpill(c.status)}${c.where.map(refChip).join('')}</div></article>`).join('');
+$('plotkinds').innerHTML = (D.plotKinds || []).map(k => `<article><h3>${esc(k.name)}</h3><p>${fmt(k.what)}</p><p><b>What proves it can be built on:</b> ${fmt(k.legal)}</p><p><b>Usual traps:</b> ${fmt(k.risks)}</p><p class="plain"><b>Check before paying:</b> ${fmt(k.check)}</p></article>`).join('');
+{ const sc = L.schemes || [], locI = n => { const l = LOC.find(l => l.n === n); return l ? l.i : null; };
+  $('schemes-note').textContent = sc.length ? `${sc.length} plotted schemes found so far. Prices are what the developer or seller asks unless marked otherwise. Select a row to open the place on the map.` : 'No plotted schemes have been recorded yet. The weekly updates are collecting them from the GujRERA register and developer price lists.';
+  $('schemes-wrap').hidden = !sc.length;
+  $('t-schemes').innerHTML = sc.map(s => { const i = locI(s.loc), sr = L.src[s.s], v = s.v == null ? null : (Array.isArray(s.v) ? s.v : [s.v, s.v]).map(x => x / L.units[s.u || 'yd'].d * 9);
+    return `<tr${i != null ? ` class="pick" data-jump="l:${i}" tabindex="0"` : ''}><td>${esc(s.n)}${s.dev ? `<br><span class="small muted">${esc(s.dev)}</span>` : ''}${s.rera ? `<br><span class="small muted">RERA ${esc(s.rera)}</span>` : ''}</td><td>${esc(s.loc)}</td><td>${esc(PK[s.kind] || s.kind || '')}</td><td>${esc(s.size || '–')}</td><td class="num">${v ? (v[0] === v[1] ? '₹' + inr(v[0]) : '₹' + inr(v[0]) + '–' + inr(v[1])) : '–'}</td><td>${esc(s.st || '')}${s.note ? `<br><span class="small muted">${esc(s.note)}</span>` : ''}</td><td class="small">${sr ? `<a href="${sr.u}" target="_blank" rel="noopener">${esc(sr.t)}</a>` : ''}</td></tr>`; }).join(''); }
 $('t-cov').innerHTML = L.coverage.map(c => `<tr><td>${esc(c.n)}</td><td>${esc(c.k)}</td><td>${esc(c.st)}</td><td>${esc(c.got)}</td></tr>`).join('');
 $('gloss').innerHTML = D.glossary.map(g => `<div><dt>${esc(g.t)}</dt><dd>${esc(g.d)}</dd></div>`).join('');
 $('srclist').innerHTML = [...Object.values(D.sources), ...Object.values(L.src)].map(s => `<li><a href="${s.u}" target="_blank" rel="noopener">${esc(s.t)}</a></li>`).join('');

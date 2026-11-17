@@ -3,21 +3,11 @@ window.LW = {
  "updated": "2026-11-17",
  "findings": [
   {
-   "t": "Public money is going into four corridors: north to Gandhinagar and GIFT City, west to Sanand, south-west to Dholera, and north-west towards Mehsana.",
-   "refs": [
-    "gift_area",
-    "sanand",
-    "dholera"
-   ]
+   "t": "Plot prices are the thinnest data on this page: only 24 of 96 localities have one, and all are asking or unverified figures. Filling them is the focus of the coming weekly updates.",
+   "refs": []
   },
   {
-   "t": "Land next to GIFT City already carries the highest official value outside the city: farmland at Shahpur and Ratanpur is valued at ₹2,600 to 5,300 per sq m.",
-   "refs": [
-    "gift_area"
-   ]
-  },
-  {
-   "t": "Dholera is the biggest bet. Sellers ask about 34 times the official value of nearby farmland, and the airport and chip fab are not finished.",
+   "t": "Dholera is the biggest bet. Sellers ask about 34 times the official value of nearby farmland. The airport was about 80% built in July 2026 but has no confirmed opening date, and the chip fab is not finished.",
    "refs": [
     "dholera"
    ]
@@ -29,8 +19,16 @@ window.LW = {
    ]
   },
   {
-   "t": "Only registered farmers can buy farmland in Gujarat. Check the buyer's status before considering any farmland.",
+   "t": "Only registered farmers can buy farmland in Gujarat. A farmhouse or weekend plot is only safe for a non-farmer if the land is already converted to non-agricultural use.",
    "refs": []
+  },
+  {
+   "t": "Public money is going into four corridors: north to Gandhinagar and GIFT City, west to Sanand, south-west to Dholera, and north-west towards Mehsana.",
+   "refs": [
+    "gift_area",
+    "sanand",
+    "dholera"
+   ]
   }
  ],
  "corridors": {
@@ -484,8 +482,58 @@ window.LW = {
    "status": "Operational",
    "date": "Open",
    "path": [
-    [[23.103,72.598],[23.072,72.587],[23.05,72.572],[23.033,72.568],[23.015,72.56],[22.996,72.536]],
-    [[23.052,72.497],[23.045,72.53],[23.033,72.568],[23.027,72.6],[23.012,72.635],[22.998,72.666]]
+    [
+     [
+      23.103,
+      72.598
+     ],
+     [
+      23.072,
+      72.587
+     ],
+     [
+      23.05,
+      72.572
+     ],
+     [
+      23.033,
+      72.568
+     ],
+     [
+      23.015,
+      72.56
+     ],
+     [
+      22.996,
+      72.536
+     ]
+    ],
+    [
+     [
+      23.052,
+      72.497
+     ],
+     [
+      23.045,
+      72.53
+     ],
+     [
+      23.033,
+      72.568
+     ],
+     [
+      23.027,
+      72.6
+     ],
+     [
+      23.012,
+      72.635
+     ],
+     [
+      22.998,
+      72.666
+     ]
+    ]
    ],
    "detail": "North–south line from Motera to APMC and east–west line from Thaltej Gam to Vastral Gam.",
    "plain": "The city's existing metro. Areas near stations are already priced for it.",
@@ -498,8 +546,50 @@ window.LW = {
    "status": "Operational",
    "date": "Final section opened January 2026",
    "path": [
-    [[23.103,72.598],[23.12,72.607],[23.15,72.633],[23.17,72.64],[23.195,72.637],[23.218,72.652],[23.232,72.636]],
-    [[23.156,72.636],[23.156,72.662],[23.16,72.683]]
+    [
+     [
+      23.103,
+      72.598
+     ],
+     [
+      23.12,
+      72.607
+     ],
+     [
+      23.15,
+      72.633
+     ],
+     [
+      23.17,
+      72.64
+     ],
+     [
+      23.195,
+      72.637
+     ],
+     [
+      23.218,
+      72.652
+     ],
+     [
+      23.232,
+      72.636
+     ]
+    ],
+    [
+     [
+      23.156,
+      72.636
+     ],
+     [
+      23.156,
+      72.662
+     ],
+     [
+      23.16,
+      72.683
+     ]
+    ]
    ],
    "detail": "28.2 km, 22 stations in two corridors: Motera to Mahatma Mandir and a branch from GNLU to GIFT City. Reports say the last section was inaugurated in January 2026. One older report differs on the final stretch.",
    "plain": "You can now ride the metro from Ahmedabad to Gandhinagar and GIFT City. That makes living in one and working in the other practical.",
@@ -514,8 +604,26 @@ window.LW = {
    "status": "Approved",
    "date": "Foundation stone 30 October 2026",
    "path": [
-    [[23.16,72.683],[23.172,72.708]],
-    [[23.12,72.607],[23.078,72.63]]
+    [
+     [
+      23.16,
+      72.683
+     ],
+     [
+      23.172,
+      72.708
+     ]
+    ],
+    [
+     [
+      23.12,
+      72.607
+     ],
+     [
+      23.078,
+      72.63
+     ]
+    ]
    ],
    "detail": "Union Cabinet approved the 3.33 km GIFT City–Shahpur extension in February 2026 (about ₹1,067 crore, three elevated stations). Ranjit Buildcon was lowest bidder in July 2026. The Prime Minister laid the foundation stone for this and the airport link on 30 October 2026. No opening date announced.",
    "plain": "The metro will be extended past GIFT City to Shahpur village and to the airport. Work is just starting.",
@@ -531,7 +639,24 @@ window.LW = {
    "status": "Under construction",
    "date": "Gujarat section targeted for December 2027",
    "path": [
-    [[23.073,72.588],[23.027,72.601],[22.9,72.68],[22.6,72.93]]
+    [
+     [
+      23.073,
+      72.588
+     ],
+     [
+      23.027,
+      72.601
+     ],
+     [
+      22.9,
+      72.68
+     ],
+     [
+      22.6,
+      72.93
+     ]
+    ]
    ],
    "detail": "Sabarmati station: foundation and structural works complete, finishing in progress (July 2026). The government told Parliament in 2025 that the Gujarat section, Vapi to Sabarmati, is likely by December 2027. The first trial stretch, Surat–Bilimora, is targeted for 2027. Full line to Mumbai is reported for 2029.",
    "plain": "India's first bullet train ends at Sabarmati. It will start with a short stretch in south Gujarat. Trains reaching Ahmedabad are still a few years away.",
@@ -546,7 +671,10 @@ window.LW = {
    "kind": "ring",
    "status": "Under construction",
    "date": "Target end of 2026 (one source)",
-   "center": [23.035,72.565],
+   "center": [
+    23.035,
+    72.565
+   ],
    "radiusKm": 12.1,
    "detail": "The 76 km ring road around Ahmedabad is being widened from four to six lanes at about ₹2,100 crore, run by AUDA. A property blog reported it roughly half done in February 2026.",
    "plain": "The city's outer ring road is being widened. Land just outside the ring is where the city grows next.",
@@ -574,7 +702,32 @@ window.LW = {
    "status": "Operational",
    "date": "Opened 31 March 2026",
    "path": [
-    [[22.975,72.478],[22.8,72.4],[22.62,72.33],[22.45,72.265],[22.3,72.22],[22.18,72.19]]
+    [
+     [
+      22.975,
+      72.478
+     ],
+     [
+      22.8,
+      72.4
+     ],
+     [
+      22.62,
+      72.33
+     ],
+     [
+      22.45,
+      72.265
+     ],
+     [
+      22.3,
+      72.22
+     ],
+     [
+      22.18,
+      72.19
+     ]
+    ]
    ],
    "detail": "109 km [[greenfield]] expressway, part of the Delhi–Mumbai Industrial Corridor. An extension towards Bhavnagar has been reported. Route on this map is indicative.",
    "plain": "A new fast road from the edge of Ahmedabad to Dholera. It cuts the drive to about an hour.",
@@ -589,7 +742,20 @@ window.LW = {
    "status": "Approved",
    "date": "Bids invited February 2026",
    "path": [
-    [[23.6,72.25],[23.38,72.36],[23.16,72.46]]
+    [
+     [
+      23.6,
+      72.25
+     ],
+     [
+      23.38,
+      72.36
+     ],
+     [
+      23.16,
+      72.46
+     ]
+    ]
    ],
    "detail": "214 km six-lane access-controlled expressway, ₹10,534 crore. NHAI invited bids for the first package in early 2026. Land acquisition notified in Patan in December 2025. Route on this map is indicative only.",
    "plain": "A new expressway from north Gujarat down to Ahmedabad. It is at the tender stage, so opening is years away.",
@@ -604,7 +770,20 @@ window.LW = {
    "status": "Under construction",
    "date": "82% done (October 2026). Finish December 2027",
    "path": [
-    [[23.06,72.585],[23.075,72.6],[23.095,72.63]]
+    [
+     [
+      23.06,
+      72.585
+     ],
+     [
+      23.075,
+      72.6
+     ],
+     [
+      23.095,
+      72.63
+     ]
+    ]
    ],
    "detail": "11 km on both banks from Dafnala to Indira Bridge, ₹1,285 crore. Includes a six-lane barrage-cum-bridge due April 2027.",
    "plain": "The riverside promenade is being extended north towards Motera. Riverfront land is sold by the government for high-rise development.",
@@ -620,7 +799,24 @@ window.LW = {
    "status": "Approved",
    "date": "Overall 37.6 km targeted for end of 2027",
    "path": [
-    [[23.095,72.63],[23.13,72.655],[23.165,72.668],[23.22,72.668]]
+    [
+     [
+      23.095,
+      72.63
+     ],
+     [
+      23.13,
+      72.655
+     ],
+     [
+      23.165,
+      72.668
+     ],
+     [
+      23.22,
+      72.668
+     ]
+    ]
    ],
    "detail": "₹350 crore allocated in the 2025-26 state budget. Groundwork on the GIFT City stretch began in April 2025. No completion date found for this stretch specifically.",
    "plain": "The plan is one continuous riverfront from Ahmedabad to Gandhinagar. The northern part is at an early stage.",
@@ -709,10 +905,13 @@ window.LW = {
    "date": "About 80% (July 2026). Flights targeted December 2026",
    "lat": 22.36,
    "lng": 72.31,
-   "detail": "The Ministry of Civil Aviation reported about 80% completion in July 2026. The December 2026 commercial start is not confirmed, and an earlier October target was missed.",
-   "plain": "A new airport for Dholera and cargo. Nearly built, opening date uncertain.",
+   "detail": "Planned as Ahmedabad's second airport, about 80 km from the city airport by air. It is run by a joint company of the Airports Authority of India (51%), the Gujarat government (33%) and the national industrial corridor trust (16%). The Cabinet approved Phase I in June 2022 at about ₹1,305 crore, and the state gave about 1,426 hectares of its own land. The ₹333 crore terminal contract was awarded in January 2024. The Ministry of Civil Aviation reported about 80% completion in July 2026. Opening dates quoted online come mostly from plot-selling websites. No official opening date or aerodrome licence has been found, and earlier targets were missed.",
+   "plain": "Ahmedabad's planned second airport, at Dholera. Mostly built, but no one official has said when flights start.",
    "src": [
-    "s_dh_air"
+    "s_dh_air",
+    "s_dh_cab",
+    "s_diacl",
+    "s_dh_term"
    ]
   },
   {
@@ -1038,6 +1237,36 @@ window.LW = {
    "k": "stamp duty",
    "t": "Stamp duty and registration",
    "d": "Tax paid when a sale is registered. In Gujarat it is reported as 4.9% stamp duty plus 1% registration fee, with the registration fee waived for women buyers."
+  },
+  {
+   "k": "final plot",
+   "t": "Final plot (FP)",
+   "d": "In a town planning scheme, the plot given back to an owner after the scheme is sanctioned, with a fixed number, size and position. Only a final plot has a settled boundary."
+  },
+  {
+   "k": "draft TP",
+   "t": "Draft TP scheme",
+   "d": "A town planning scheme that has been proposed but not yet sanctioned. Plot numbers and sizes can still change, so a plot sold in a draft scheme may not end up where or what the seller says."
+  },
+  {
+   "k": "NA order",
+   "t": "NA order",
+   "d": "The official order that converts farmland to non-agricultural use. Ask the seller for a copy and check its date and the survey number it names."
+  },
+  {
+   "k": "plotted scheme",
+   "t": "Plotted scheme",
+   "d": "A layout where a developer sells numbered plots with roads, drains and other services, instead of finished houses."
+  },
+  {
+   "k": "development charges",
+   "t": "Development charges",
+   "d": "Fees for building roads, drains and services for a plot or scheme. Ask whether they are in the price or charged on top."
+  },
+  {
+   "k": "clear title",
+   "t": "Clear title",
+   "d": "Proof that the seller fully owns the land and no one else has a claim on it, built from about 30 years of land records. A lawyer checks it."
   }
  ],
  "sources": {
@@ -1208,6 +1437,52 @@ window.LW = {
   "s_mplads": {
    "t": "Government MPLADS public dashboard, 18th Lok Sabha",
    "u": "https://mplads.mospi.gov.in/digigov/dashboard.html"
+  },
+  "s_dh_cab": {
+   "t": "Deccan Herald: Cabinet approves Dholera greenfield airport, ₹1,305 crore (June 2022)",
+   "u": "https://www.deccanherald.com/national/cabinet-nod-for-development-of-new-greenfield-airport-in-gujarats-dholera-1118115.html"
+  },
+  "s_diacl": {
+   "t": "Dholera International Airport Company: about the company",
+   "u": "https://dholera.gujarat.gov.in/about_diacl"
+  },
+  "s_dh_term": {
+   "t": "Swarajya: ₹333 crore terminal contract for Dholera airport (January 2024)",
+   "u": "https://swarajyamag.com/infrastructure/ahmedabads-second-airport-gears-up-aai-awards-rs-333-crore-contract-for-terminal-building-in-dholera"
   }
- }
+ },
+ "plotKinds": [
+  {
+   "k": "na",
+   "name": "City NA and town-planning final plots",
+   "what": "A plot on land already converted to non-agricultural use ([[NA]]), or a [[final plot]] inside a sanctioned [[TP scheme]] in [[AUDA]] or [[GUDA]] limits. Usually sold by individual owners through brokers.",
+   "legal": "An [[NA order]] or the final plot record of a sanctioned TP scheme, a [[clear title]] traced through the [[7/12]] or property card, and development permission from the planning authority before building.",
+   "risks": "A plot in a [[draft TP]] scheme can change size or position when the scheme is sanctioned. Disputed ownership and land sold twice are the most common problems.",
+   "check": "Ask for the TP scheme number, the final plot number, the NA order and the latest property card, and have a Gujarat revenue lawyer run the title search."
+  },
+  {
+   "k": "rera",
+   "name": "RERA plotted schemes",
+   "what": "A [[plotted scheme]]: a developer sells numbered plots in a layout with internal roads, drains and services, and registers the project with GujRERA ([[RERA]]).",
+   "legal": "A GujRERA registration number for the project, the sanctioned layout plan, NA or development permission for the whole land, and a registered sale deed for each plot.",
+   "risks": "Registration covers the project, not the quality of the title or the promised amenities. Developer price lists usually run above resale prices nearby. [[development charges]] may be extra.",
+   "check": "Look the number up on the GujRERA website, check the promised completion date, match the plot number to the approved layout, and compare the price with nearby resale asks."
+  },
+  {
+   "k": "dholera",
+   "name": "Dholera TP-scheme plots",
+   "what": "Plots inside the town planning schemes of Dholera, the planned industrial city ([[SIR]]) run by DSIRDA. Sold by the authority, by developers and by resellers.",
+   "legal": "A DSIRDA allotment or a registered sale deed, plus the TP scheme number and final plot number in the sanctioned scheme.",
+   "risks": "Asking prices run far above official land values. The airport opening date is still unconfirmed, and many marketing sites that quote dates and returns are run by plot sellers. Some plots are far from built roads and services.",
+   "check": "Ask for the final plot number and the DSIRDA record, check where the plot sits on the sanctioned scheme map, and compare the price with the official [[jantri]] value."
+  },
+  {
+   "k": "farm",
+   "name": "Farmhouse and weekend plots",
+   "what": "Larger plots on the edge of the city or in villages, often still classed as agricultural land, sold for a weekend house or as a long-term holding.",
+   "legal": "Only registered farmers ([[khedut]]) can buy agricultural land in Gujarat, so a non-farmer needs land that is already NA, with the NA order in hand. A Gujarat revenue lawyer must confirm what applies to the buyer.",
+   "risks": "\"Farmhouse plots\" are sometimes carved out of farmland without conversion, and such a sale can be challenged later. Conversion takes time and fees.",
+   "check": "Ask for the 7/12 extract and the NA order, and confirm whether the seller is offering the land only to registered farmers."
+  }
+ ]
 };

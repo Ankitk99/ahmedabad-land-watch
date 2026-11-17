@@ -1,6 +1,6 @@
 window.LWL = {
  "asof": "November 2026",
- "note": "Every price is converted to rupees per square foot so different kinds of land can be compared. The original unit is kept beside it.",
+ "note": "Plots are shown in rupees per square yard, the unit Gujarat plot listings use (1 sq yd = 9 sq ft). Everything else is in rupees per square foot. The original unit is kept beside each figure.",
  "units": {
   "ft": {
    "n": "sq ft",
@@ -20,13 +20,13 @@ window.LWL = {
   }
  },
  "types": {
+  "plot": {
+   "n": "Residential plots",
+   "of": "per sq yd of land"
+  },
   "flat": {
    "n": "Flats",
    "of": "per sq ft of flat"
-  },
-  "plot": {
-   "n": "Residential plots",
-   "of": "per sq ft of land"
   },
   "comm": {
    "n": "Offices and shops",
@@ -2404,6 +2404,16 @@ window.LWL = {
    "body": "One portal page shows a steep one-year fall for Bavla, and a 1.8% fall near Sanand GIDC.",
    "check": "The page rests on very few listings, so the figure is unreliable in either direction. It does show that outlying prices are not rising everywhere.",
    "status": "Weak data"
+  },
+  {
+   "h": "\"Dholera airport opens in September or October 2026\"",
+   "who": "Dholera plot sellers and airport status websites",
+   "where": [
+    "dholera"
+   ],
+   "body": "Several plot-selling websites give a September or October 2026 opening, citing a July 2026 ministry review that put the airport at about 80% complete.",
+   "check": "No official opening date was found from the Airports Authority, the airport company or the aviation regulator, and that window has passed with no opening reported. Earlier targets of 2025-26 and March 2026 were also missed. Treat any opening date as unconfirmed.",
+   "status": "Unverified"
   }
  ],
  "coverage": [
@@ -2453,7 +2463,7 @@ window.LWL = {
    "n": "GujRERA project register",
    "k": "Official",
    "st": "Not started",
-   "got": "Would give every registered project, its size and sold units by area"
+   "got": "Needed for the plotted schemes table: registration number, plot sizes and stage for each plotted project. Not collected yet."
   },
   {
    "n": "AnyROR land records (7/12)",
@@ -2502,6 +2512,19 @@ window.LWL = {
    "k": "Official",
    "st": "Not published",
    "got": "Budget allocation found (about ₹40 lakh per councillor). No spending figures; needs a Right to Information request to the corporation"
+  },
+  {
+   "n": "Airport announcements: AAI, Dholera airport company, Civil Aviation Ministry, DGCA",
+   "k": "Official announcements",
+   "st": "Partly collected",
+   "got": "Ownership, approval, land and contract details, and the July 2026 progress figure. No official opening date or aerodrome licence found yet."
+  },
+  {
+   "n": "Developer price lists for plotted schemes",
+   "k": "Developer websites",
+   "st": "Not started",
+   "got": "To be collected for the plotted schemes table. These are seller prices and will be marked as such."
   }
- ]
+ ],
+ "schemes": []
 };
