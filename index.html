@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Ahmedabad Land Watch</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: briefing first, then a satellite map with price zones and a detail panel beside it, then reference tables. */
+:root{
+  --bg:#f1f3ef;--surface:#fff;--ink:#15221d;--muted:#5b6a63;--line:#d3dad4;--accent:#0d6b57;--accent-soft:#dcebe5;
+  --map:#e6ebe4;--urban:#d0d9ce;--water:#8fbcd4;--road:#7a5a1e;--rail:#b3305a;--front:#1f7a8c;
+  --cN:#2b6cb0;--cW:#1c8a5e;--cSW:#c2570c;--cNW:#7b4bb3;--cE:#b03a6b;--cC:#69756f;
+  --ok:#1c7a50;--build:#a66a00;--plan:#2b6cb0;--idea:#7b4bb3;--warn-bg:#fbf0d9;--warn-ink:#5f4200;
+  /* fixed colours used on top of the satellite image, same in both themes */
+  --sroad:#ffd15c;--srail:#ff7ab0;--sfront:#62e0ee;
+  --z1:#fde4f3;--z2:#f6a8dc;--z3:#e562bd;--z4:#b22b95;--z5:#6b0f62;
+  --display:"Space Grotesk",system-ui,sans-serif;--body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1513;--surface:#18201d;--ink:#e4ebe7;--muted:#9aa9a2;--line:#2c3833;--accent:#5fd0b3;--accent-soft:#17352d;
+  --map:#141c19;--urban:#222d28;--water:#2f6f93;--road:#d0a85a;--rail:#f07aa0;--front:#58bfd2;
+  --cN:#6aa9ea;--cW:#4fc58f;--cSW:#f0914a;--cNW:#b48cf0;--cE:#ec7aa8;--cC:#93a09a;
+  --ok:#4fc58f;--build:#e0a53a;--plan:#6aa9ea;--idea:#b48cf0;--warn-bg:#33290f;--warn-ink:#f1d48a;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1513;--surface:#18201d;--ink:#e4ebe7;--muted:#9aa9a2;--line:#2c3833;--accent:#5fd0b3;--accent-soft:#17352d;
+  --map:#141c19;--urban:#222d28;--water:#2f6f93;--road:#d0a85a;--rail:#f07aa0;--front:#58bfd2;
+  --cN:#6aa9ea;--cW:#4fc58f;--cSW:#f0914a;--cNW:#b48cf0;--cE:#ec7aa8;--cC:#93a09a;
+  --ok:#4fc58f;--build:#e0a53a;--plan:#6aa9ea;--idea:#b48cf0;--warn-bg:#33290f;--warn-ink:#f1d48a;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);padding-block:28px 96px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.02em}
+h2{font-size:24px}
+h3{font-size:19px}
+h4{font:600 12px/1.3 var(--body);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:16px 0 4px}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.head{display:flex;flex-direction:column;gap:10px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:13px}
+.lede{max-width:68ch;font-size:16px}
+section{display:flex;flex-direction:column;gap:14px}
+.sec-note{max-width:72ch;color:var(--muted)}
+
+.first{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.first>div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;min-width:0}
+.first b{display:block;font-family:var(--display);font-size:16px;margin-bottom:4px}
+
+.brief{background:var(--surface);border:1px solid var(--line);border-radius:6px;min-width:0}
+.brief>header{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.item{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.item h3{font-size:17px}
+.when{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.plain{background:var(--accent-soft);border-radius:4px;padding:8px 10px;font-size:14px}
+.plain b{font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{border:1px solid var(--line);background:transparent;border-radius:99px;padding:6px 14px;min-height:36px;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.srcs{font-size:13px;color:var(--muted)}
+.srcs a{color:var(--muted)}
+.nextlist{padding:14px 18px}
+.nextlist ul{margin:6px 0 0;padding-left:20px}
+details.old{padding:12px 18px}
+
+.mapgrid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;align-items:start}
+@media (max-width:860px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.mapcol{display:flex;flex-direction:column;gap:10px;min-width:0}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tools .lab{font-size:13px;color:var(--muted);margin-right:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:5px 12px;min-height:36px;cursor:pointer;font-size:13px}
+.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn:hover{border-color:var(--accent)}
+.btn[disabled]{opacity:.45;cursor:default}
+.tools label{font-size:13px;display:inline-flex;gap:5px;align-items:center}
+.mapbox{position:relative;background:#10160f;border:1px solid var(--line);border-radius:6px;overflow:hidden;height:clamp(440px,74vh,720px)}
+.mapbox.plainmap{background:var(--map)}
+.mapbox svg{display:block;width:100%;height:100%;cursor:grab;font-family:var(--body);touch-action:none;user-select:none;-webkit-user-select:none}
+.mapbox svg.drag{cursor:grabbing}
+.zoom{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:8px}
+.zoom .btn{width:44px;height:44px;padding:0;font-size:22px;line-height:1}
+.skip{position:absolute;left:-9999px;top:auto}
+.skip:focus{position:static;display:inline-block;padding:8px 12px;border:2px solid var(--accent);border-radius:4px;background:var(--surface);color:var(--accent);font-size:14px}
+.tileload{position:absolute;left:50%;top:8px;transform:translateX(-50%);white-space:nowrap;font-size:13px;color:#fff;background:rgba(0,0,0,.55);border-radius:4px;padding:4px 10px;pointer-events:none}
+.badge{position:absolute;font-size:11px;color:#fff;background:rgba(0,0,0,.55);border-radius:3px;padding:2px 6px;pointer-events:none}
+.plainmap .badge{color:var(--muted);background:transparent}
+.scale{left:8px;bottom:8px;display:flex;flex-direction:column;gap:2px}
+.scale i{display:block;height:5px;border:1.5px solid currentColor;border-top:0}
+.north{left:8px;top:8px}
+.credit{right:8px;bottom:8px;font-size:10px}
+.lbl{fill:#fff;stroke:rgba(0,0,0,.8);paint-order:stroke;stroke-linejoin:round;font-weight:600;pointer-events:none}
+.plainmap .lbl{fill:var(--ink);stroke:var(--map)}
+.lbl.pl{font-weight:400;fill-opacity:.9}
+.lbl.city{letter-spacing:.12em;font-weight:500}
+[data-id]{cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.sw{width:22px;height:12px;border-radius:2px;display:inline-block;border:1px solid var(--line)}
+.ln{width:22px;height:0;border-top:2.5px solid;display:inline-block}
+.dia{width:9px;height:9px;transform:rotate(45deg);border:1.5px solid var(--ink);background:var(--surface);display:inline-block}
+.pricekey{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.pricekey .legend{color:var(--ink)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;margin:8px 0 0;font-size:14px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:3px;padding:1px 6px;border:1px solid currentColor;white-space:nowrap}
+.pill.s-Operational,.pill.k-Official,.pill.k-Actual{color:var(--ok)}.pill.s-Under,.pill.k-Asking{color:var(--build)}.pill.s-Approved{color:var(--plan)}.pill.s-Proposed,.pill.k-Seller-quoted,.pill.k-Unverified{color:var(--idea)}
+.drv{display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none}
+.drv button{all:unset;cursor:pointer;display:flex;gap:8px;align-items:baseline;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);width:100%;font-size:14px}
+.drv button:hover span:first-child{color:var(--accent)}
+.drv button:focus-visible{outline:2px solid var(--accent)}
+.corr{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.corr div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 8px;align-items:baseline}
+.corr b{font-weight:600}
+.corr p{grid-column:2;font-size:14px;color:var(--muted)}
+.ptable{display:flex;flex-direction:column;margin-top:6px}
+.ptable>div{padding:8px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.ptable .row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.ptable .big{font:600 17px/1.2 var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.term{all:unset;cursor:help;border-bottom:1.5px dotted var(--accent)}
+.term:focus-visible{outline:2px solid var(--accent)}
+#defbar{position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  max-width:640px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:6px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;z-index:40;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#defbar[hidden]{display:none}
+#defbar b{font-family:var(--display);display:block}
+#defbar button{all:unset;cursor:pointer;font-size:20px;line-height:1;padding:0 4px}
+#defbar div{min-width:0;font-size:14px}
+
+.tablewrap{overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.tablewrap.tall{max-height:560px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:760px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;position:sticky;top:0;background:var(--surface)}
+tbody tr:last-child td{border-bottom:0}
+tr.pick{cursor:pointer}
+tr.pick:hover td{background:var(--accent-soft)}
+tr.grp td{font:600 12px/1.3 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+td .dot{margin-right:6px}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+td.num,th.num{text-align:right}
+
+.claims{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.claims article{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.claims h3{font-size:16px}
+.warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:6px;padding:14px 16px;max-width:80ch}
+.warn b{font-family:var(--display);font-size:16px;display:block;margin-bottom:4px}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:0 28px;margin:0}
+.gloss div{padding:10px 0;border-top:1px solid var(--line);min-width:0}
+.gloss dt{font-weight:600}
+.gloss dd{margin:2px 0 0;color:var(--muted);font-size:14px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px 28px}
+.cols>div{min-width:0}
+.srclist{columns:2 320px;column-gap:28px;font-size:13px;padding-left:18px;margin:0}
+.srclist li{break-inside:avoid;margin-bottom:4px}
+footer{font-size:13px;color:var(--muted);max-width:80ch;display:flex;flex-direction:column;gap:6px}
+
+/* sticky section bar; the fixed band paints the phone's top safe area so nothing scrolls under the host's controls */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:16;background:var(--bg)}
+.secbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax);border-bottom:1px solid var(--line)}
+.secin{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-block:6px}
+.secin::-webkit-scrollbar{display:none}
+.secin a{flex:none;text-decoration:none;color:var(--muted);font:500 14px/1 var(--body);padding:0 14px;min-height:40px;border-radius:99px;display:inline-flex;align-items:center}
+.secin a:hover{color:var(--ink)}
+.secin a[aria-current="true"]{background:var(--accent-soft);color:var(--accent)}
+section,.mapbox{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
+
+/* key findings and folded sections */
+.findings{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.findings h2{font-size:20px}
+.findings ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+.findings li{max-width:75ch}
+.findings .chip{margin-left:4px}
+details.fold>summary,details.cautions>summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center;gap:8px;color:var(--accent)}
+details.cautions[open]>summary,details.fold[open]>summary{margin-bottom:10px}
+
+/* search inputs, compare table, pinned first columns */
+.tools input[type=search]{flex:1;min-width:0;max-width:380px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font:inherit}
+.tools input[type=search]:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+table.cmp{min-width:0;width:auto;table-layout:fixed}
+.cmp th,.cmp td{width:180px}
+.cmp th:first-child,.cmp td:first-child,#t-prices td:first-child,#t-ph th:first-child{position:sticky;left:0;background:var(--surface);z-index:1}
+.cmp th:first-child,.cmp td:first-child{min-width:112px;width:118px;color:var(--muted);font:600 12px/1.3 var(--body);letter-spacing:.04em;text-transform:uppercase}
+#t-ph th:first-child{z-index:2}
+.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 15px/1.25 var(--display);color:var(--ink)}
+.cmp th button{all:unset;cursor:pointer;color:var(--muted);font-size:13px;margin-left:6px;padding:2px 6px;border-radius:4px}
+.cmp th button:hover{color:var(--accent)}
+.cmp th button:focus-visible{outline:2px solid var(--accent)}
+.cmp td .small{display:block}
+.cmp .num{white-space:normal}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:6px;padding:18px;color:var(--muted)}
+.btn[aria-pressed="true"].cmpbtn{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+#cmp-n:not(:empty){display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:6px;border-radius:99px;background:var(--accent);color:var(--surface);font-size:12px}
+
+/* phone layout: scrolling control rows, a taller map, and the detail panel as a bottom sheet */
+.sheetbar{display:none}
+@media (max-width:860px){
+  .tools.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-right:16px}
+  .tools.scroll::-webkit-scrollbar{display:none}
+  .tools.scroll .btn,.tools.scroll .lab{flex:none;white-space:nowrap}
+  .tools .btn{min-height:40px}
+  .mapbox{height:64vh;height:64dvh;min-height:360px}
+  .panel.open{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:58vh;max-height:58dvh;overflow:auto;overscroll-behavior:contain;border-radius:14px 14px 0 0;border-bottom:0;box-shadow:0 -8px 30px rgba(0,0,0,.35);
+    padding:0 max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+  .panel.open.full{max-height:calc(100vh - env(safe-area-inset-top,0px) - 56px);max-height:calc(100dvh - env(safe-area-inset-top,0px) - 56px)}
+  .panel.open .sheetbar{display:flex;position:sticky;top:0;z-index:1;background:var(--surface);justify-content:space-between;align-items:center;gap:8px;padding:10px 0 8px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+  .sheetbar .grip{width:40px;height:4px;border-radius:2px;background:var(--line)}
+  .sheetbar span{display:flex;gap:6px}
+}
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <h1>Ahmedabad Land Watch</h1>
+    <div class="meta"><span id="m-issue"></span><span>Covers Ahmedabad, Gandhinagar, Sanand, Dholera, Mehsana</span></div>
+    <p class="lede">A weekly record of where the government and large companies are spending around Ahmedabad, what land costs in each locality, and what is only market talk. Technical facts come first. Each one is followed by the same point in plain words.</p>
+  </header>
+
+  <nav class="secbar" aria-label="Page sections"><div class="secin"><a href="#brief">This week</a><a href="#map">Map</a><a href="#compare">Compare<span id="cmp-n"></span></a><a href="#prices">Prices</a><a href="#funds">Local funds</a><a href="#coverage">Sources</a></div></nav>
+
+  <section aria-labelledby="h-key">
+    <div class="findings"><h2 id="h-key">Key findings</h2><ol id="findings"></ol></div>
+    <details class="cautions"><summary>Three things to know before reading</summary>
+    <div class="first">
+      <div><b>Money is going to four corridors</b>North to Gandhinagar and GIFT City, west to Sanand, south-west to Dholera, and north-west towards Mehsana. The map is organised around them.</div>
+      <div><b>Farmland has a buyer restriction</b>Gujarat law lets only registered farmers buy agricultural land. Check the buyer's status before looking at any farmland. Details are in the rules section.</div>
+      <div><b>Most prices are asking prices</b>They come from property portals, which run high. Government auction results and official GIDC rates are marked separately because they are real transactions or official figures.</div>
+    </div>
+    </details>
+  </section>
+
+  <section id="brief" aria-labelledby="h-brief">
+    <h2 id="h-brief">This week</h2>
+    <div class="brief" id="briefbox"></div>
+  </section>
+
+  <section id="map" aria-labelledby="h-map">
+    <h2 id="h-map">Prices and projects map</h2>
+    <div class="tools"><label class="lab" for="find">Find</label><input id="find" type="search" list="find-list" placeholder="A place, e.g. Shela" autocomplete="off" enterkeyhint="go"><datalist id="find-list"></datalist></div>
+    <div class="mapgrid">
+      <div class="mapcol">
+        <div class="tools scroll" id="presets" role="group" aria-label="Jump to"><span class="lab">Go to</span></div>
+        <div class="tools scroll" id="types" role="group" aria-label="Price layer"><span class="lab">Prices for</span></div>
+        <a class="skip" href="#compare">Skip the map</a>
+        <div class="mapbox" id="mapbox">
+          <div class="tileload" id="tileload" hidden>Loading satellite image…</div>
+          <svg id="svg" role="group" aria-label="Satellite map of the Ahmedabad region"><defs><pattern id="hatch" patternUnits="userSpaceOnUse" width="1" height="1" patternTransform="rotate(45)"><rect id="hatch-line" width="1" height=".3" fill="#fff" fill-opacity=".6"></rect></pattern></defs><g id="g-sat"><g data-l="8"></g><g data-l="10"></g><g data-l="12"></g></g><rect id="dim" x="-500" y="-500" width="1000" height="1000" fill="#000" fill-opacity=".18" pointer-events="none"></rect><g id="g-over"></g></svg>
+          <div class="badge north">N ↑</div>
+          <div class="zoom"><button class="btn" id="zin" aria-label="Zoom in">+</button><button class="btn" id="zout" aria-label="Zoom out">−</button></div>
+          <div class="badge scale"><i id="scalebar"></i><span id="scaletxt"></span></div>
+          <div class="badge credit" id="credit">Sentinel-2 cloudless 2025, EOX · © OpenStreetMap</div>
+        </div>
+        <div class="pricekey" id="pricekey"></div>
+        <div class="tools">
+          <label><input type="checkbox" id="l-sat" checked> Satellite image</label>
+          <label><input type="checkbox" id="l-areas" checked> Research areas</label>
+          <label><input type="checkbox" id="l-lines" checked> Transport projects</label>
+          <label><input type="checkbox" id="l-nodes" checked> Sites and factories</label>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <aside class="panel" id="panel" aria-live="polite"></aside>
+    </div>
+    <p class="small muted">Tap any zone, line or dot for details; drag to move and pinch to zoom. The page link changes to the place you pick, so Share, then Copy link, sends that exact view. Coloured zones show the going rate per square foot for the property type you pick. Circles are research areas, lines are transport projects and diamonds are single sites. The satellite image is from 2025 and is sharp to about 10 metres, enough to see roads, fields and built-up blocks but not single houses. Each panel has a link that opens the same spot in Google Maps satellite view for a closer look. Price zones are drawn around each locality's centre. They are not official boundaries.</p>
+  </section>
+
+  <section id="compare" aria-labelledby="h-cmp">
+    <h2 id="h-cmp">Compare places</h2>
+    <p class="sec-note">Pick up to three places with "Add to compare" on the map. Prices are per square foot. For a research area, each price comes from the nearest locality that has one, named underneath.</p>
+    <div id="cmp-body"></div>
+  </section>
+
+  <section id="prices" aria-labelledby="h-prices">
+    <h2 id="h-prices">Prices by locality</h2>
+    <p class="sec-note" id="prices-note"></p>
+    <div class="tools"><label class="lab" for="pfind">Filter</label><input id="pfind" type="search" placeholder="Type a place or zone" autocomplete="off"></div>
+    <div class="tablewrap tall"><table><thead id="t-ph"></thead><tbody id="t-prices"></tbody></table></div>
+  </section>
+
+  <section id="talk" aria-labelledby="h-talk">
+    <h2 id="h-talk">Market talk and unverified claims</h2>
+    <p class="sec-note">What brokers, sellers and news reports are saying, kept separate from the facts above. Each claim shows who is making it and what a check found. Treat everything here as unproven.</p>
+    <div class="claims" id="claims"></div>
+  </section>
+
+  <section id="areas" aria-labelledby="h-areas">
+    <h2 id="h-areas">Research areas</h2>
+    <p class="sec-note">The 16 areas being studied in depth. Select a row to open it on the map. <span id="sheetlink"></span></p>
+    <div class="tablewrap"><table><thead><tr><th>Area</th><th>Stage</th><th class="num">Km from centre</th><th>Price (what we know)</th><th>You can buy</th><th>Research</th></tr></thead><tbody id="t-areas"></tbody></table></div>
+    <p class="small muted">Stage: Mature = fully built and priced. Growing = active construction. Early = plans approved, little built. Speculative = depends on projects that are not finished.</p>
+  </section>
+
+  <section id="projects" aria-labelledby="h-proj">
+    <h2 id="h-proj">Project tracker</h2>
+    <details class="fold"><summary>Show every tracked project</summary>
+    <div class="tablewrap"><table><thead><tr><th>Project</th><th>Status</th><th>Key date</th><th>In plain words</th></tr></thead><tbody id="t-proj"></tbody></table></div>
+    </details>
+  </section>
+
+  <section id="funds" aria-labelledby="h-funds">
+    <h2 id="h-funds">Local development funds: how much has been used</h2>
+    <p class="sec-note" id="funds-note"></p>
+    <div class="tablewrap"><table><thead><tr><th>Lok Sabha seat and MP</th><th class="num">Fund so far</th><th class="num">Spent</th><th class="num">Share spent</th><th class="num">Rank in Gujarat</th><th class="num">Works done / recommended</th><th>Map areas it covers</th></tr></thead><tbody id="t-funds"></tbody></table></div>
+    <div class="claims" id="funds-cards"></div>
+  </section>
+
+  <section id="rules" aria-labelledby="h-rules">
+    <h2 id="h-rules">Rules and words to know</h2>
+    <div class="warn"><b>Farmland: who is allowed to buy</b>Section 63 of the Gujarat Tenancy and Agricultural Lands Act, 1948 bars the sale of agricultural land to anyone who is not a registered agriculturist. No confirmed relaxation was found as of 17 November 2026, although the state has been reported to be considering one. In plain words: a non-farmer cannot simply buy a farm. The usual legal routes are land already converted to non-agricultural (NA) use, or final plots inside a town planning scheme. A Gujarat revenue lawyer must confirm what applies to the buyer before any farmland is considered.</div>
+    <details class="fold"><summary>Show the glossary of terms</summary><dl class="gloss" id="gloss"></dl></details>
+  </section>
+
+  <section id="visit" aria-labelledby="h-visit">
+    <h2 id="h-visit">People to line up before buying</h2>
+    <p class="sec-note">General guidance for any buyer.</p>
+    <div class="cols">
+      <div><b>Revenue and property lawyer</b><p class="muted">Runs a title search across about 30 years of records, reads the 7/12 and confirms the farmer-status rule. Should be paid by you, not introduced by the seller.</p></div>
+      <div><b>RERA-registered broker for each corridor</b><p class="muted">Brokers here specialise by area. Check the registration number on the GujRERA website before meeting.</p></div>
+      <div><b>Licensed land surveyor</b><p class="muted">Measures the plot on the ground and matches it to the official record, so you get the area you pay for.</p></div>
+      <div><b>Chartered accountant</b><p class="muted">Plans the tax on purchase and eventual sale, including TDS on purchases above ₹50 lakh and capital gains.</p></div>
+    </div>
+  </section>
+
+  <section id="coverage" aria-labelledby="h-cov">
+    <h2 id="h-cov">Where the information comes from</h2>
+    <p class="sec-note">Every public source being worked through, and how far each has been collected. Sources marked blocked or not started are gaps in this page.</p>
+    <details class="fold"><summary>Show every source and how far it has been collected</summary>
+    <div class="tablewrap"><table><thead><tr><th>Source</th><th>Kind</th><th>Status</th><th>What we have</th></tr></thead><tbody id="t-cov"></tbody></table></div>
+    <h4>Articles and pages cited</h4>
+    <ol class="srclist" id="srclist"></ol>
+    </details>
+  </section>
+
+  <footer><span>This page is research to help buyers learn the market. It is not financial, legal or tax advice. Verify every fact with official records and qualified professionals before committing money.</span>
+  <span>Satellite imagery: Sentinel-2 cloudless by EOX IT Services GmbH (contains modified Copernicus Sentinel data 2025), CC BY-NC-SA 4.0. Roads, rail and place names: © OpenStreetMap contributors.</span></footer>
+</div>
+<div id="defbar" hidden><div><b id="def-t"></b><span id="def-d"></span></div><button id="def-x" aria-label="Close explanation">×</button></div>
+
+<script src="data.js" charset="utf-8"></script>
+<script src="localities.js" charset="utf-8"></script>
+<script src="geo.js" charset="utf-8"></script>
+<script src="funds.js" charset="utf-8"></script>
+<script>
+(function(){
+const D = window.LW, L = window.LWL, G = window.GEO || {sat:[], lines:{}, places:[], ll:{}}, $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = s => esc(s).replace(/\[\[(.+?)\]\]/g, (m, k) => `<button type="button" class="term" data-k="${k}">${k}</button>`);
+const A = Object.fromEntries(D.areas.map(a => [a.id, a])), P = Object.fromEntries(D.projects.map(p => [p.id, p]));
+const SHORT = {svp_enclave:'Sports Enclave', olympic_village:'Olympic village site', gift:'', micron:'Micron', tata_fab:'Tata fab', dholera_airport:'Dholera airport', lothal:'Maritime museum', maruti:'Suzuki plant'};
+const KIND = {metro:'Metro', rail:'Bullet train', road:'Expressway', ring:'Ring road', river:'Riverfront', node:'Site', policy:'Policy'};
+const date = iso => new Date(iso + 'T00:00:00').toLocaleDateString('en-IN', {day:'numeric', month:'long', year:'numeric'});
+const pill = s => `<span class="pill s-${s.split(' ')[0]}">${esc(s)}</span>`;
+const kpill = k => `<span class="pill k-${k.split(/[ ,]/)[0]}">${esc(k)}</span>`;
+const srcs = ids => ids && ids.length ? `<p class="srcs">Sources: ${ids.map(i => D.sources[i] ? `<a href="${D.sources[i].u}" target="_blank" rel="noopener">${esc(D.sources[i].t)}</a>` : '').filter(Boolean).join(' · ')}</p>` : '';
+const gmaps = (lat, lng, z) => `https://www.google.com/maps/@?api=1&map_action=map&center=${lat},${lng}&zoom=${z}&basemap=satellite`;
+const inr = n => Math.round(n).toLocaleString('en-IN');
+const big = n => n >= 1e7 ? +(n / 1e7).toFixed(2) + ' crore' : n >= 1e5 ? +(n / 1e5).toFixed(2) + ' lakh' : inr(n);
+
+/* ---------- prices ---------- */
+const LOC = L.loc.map((l, i) => ({...l, i, ll: G.ll[l.n] || l.ll}));
+const perFt = p => { const d = L.units[p.u].d, v = Array.isArray(p.v) ? p.v : [p.v, p.v]; return [v[0] / d, v[1] / d]; };
+const val = (l, t) => { const p = l.p.find(p => p.t === t); if (!p) return null; const [a, b] = perFt(p); return (a + b) / 2; };
+const ftTxt = p => { const [a, b] = perFt(p); return a === b ? `₹${inr(a)}` : `₹${inr(a)}–${inr(b)}`; };
+const rawTxt = p => p.u === 'ft' ? '' : `₹${Array.isArray(p.v) ? big(p.v[0]) + '–' + big(p.v[1]) : big(p.v)} per ${L.units[p.u].n}`;
+const shortP = v => v >= 1000 ? '₹' + (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k' : '₹' + Math.round(v);
+const TYPES = Object.keys(L.types), RAMP = ['var(--z1)', 'var(--z2)', 'var(--z3)', 'var(--z4)', 'var(--z5)'];
+const BREAKS = {};
+for (const t of TYPES){ const v = LOC.map(l => val(l, t)).filter(x => x != null).sort((a, b) => a - b), n = Math.min(5, new Set(v).size);
+  BREAKS[t] = {n: v.length, min: v[0], max: v[v.length - 1], cuts: Array.from({length: Math.max(0, n - 1)}, (_, k) => v[Math.floor((k + 1) * v.length / n)])}; }
+const cls = (t, v) => { const c = BREAKS[t].cuts; let k = 0; while (k < c.length && v >= c[k]) k++; return c.length < 4 ? Math.round(k * 4 / Math.max(1, c.length)) : k; };
+
+/* ---------- projection: Web Mercator, km from city centre ---------- */
+const RM = 6378.137, WK = 2 * Math.PI * RM, rad = Math.PI / 180, mx = lng => RM * lng * rad, my = lat => RM * Math.log(Math.tan(Math.PI / 4 + lat * rad / 2));
+const X0 = mx(72.58), Y0 = my(23.03), COS = Math.cos(23.03 * rad);
+const xy = (lat, lng) => [mx(lng) - X0, Y0 - my(lat)];
+const kmFromCentre = a => { const [x, y] = xy(a.lat, a.lng); return Math.round(Math.hypot(x, y) * COS); };
+const PRESETS = [
+  {id:'city', name:'City', box:[22.93, 23.27, 72.33, 72.76]},
+  {id:'region', name:'Whole region', box:[22.12, 23.70, 71.95, 73.00]},
+  {id:'gift', name:'Gandhinagar and GIFT', box:[23.08, 23.27, 72.52, 72.76]},
+  {id:'west', name:'Bopal to Sanand', box:[22.92, 23.10, 72.26, 72.54]},
+  {id:'south', name:'Dholera corridor', box:[22.12, 23.02, 72.05, 72.70]},
+  {id:'north', name:'North-west', box:[23.05, 23.68, 71.98, 72.80]}
+];
+const RIVER = [[23.42,72.72],[23.30,72.69],[23.22,72.668],[23.165,72.668],[23.13,72.655],[23.095,72.63],[23.075,72.60],[23.06,72.585],[23.022,72.572],[22.99,72.55],[22.85,72.50],[22.70,72.47],[22.55,72.43],[22.30,72.38],[22.12,72.36]];
+const svg = $('svg'), gOver = $('g-over'), NS = 'http://www.w3.org/2000/svg';
+const S = {cx:0, cy:0, w:100, sel:null, preset:'city', type:'flat'};
+const size = () => [svg.clientWidth || 600, svg.clientHeight || 600];
+const sat = () => $('l-sat').checked && G.sat.length > 0;
+function fit(box){
+  const [W, H] = size(), [x0, y0] = xy(box[1], box[2]), [x1, y1] = xy(box[0], box[3]);
+  S.w = Math.max(x1 - x0, (y1 - y0) * W / H) * 1.05; S.cx = (x0 + x1) / 2; S.cy = (y0 + y1) / 2;
+}
+const pts = path => path.map(p => xy(p[0], p[1]).map(n => n.toFixed(2)).join(',')).join(' ');
+
+/* ---------- satellite tiles ---------- */
+const TILES = G.sat.map(id => { const [T, x, y] = id.split('_').map(Number), s = WK / 2 ** T; return {id, T, x: -WK / 2 + x * s - X0, y: Y0 - (WK / 2 - y * s), s}; });
+const live = new Map(), loading = new Set();
+const tileTick = () => { $('tileload').hidden = !loading.size; };
+const tileDone = e => { loading.delete(e.target); tileTick(); };
+function view(){
+  const [W, H] = size(), w = S.w, h = w * H / W, x0 = S.cx - w / 2, y0 = S.cy - h / 2, mpp = w * 1000 / W;
+  svg.setAttribute('viewBox', `${x0.toFixed(3)} ${y0.toFixed(3)} ${w.toFixed(3)} ${h.toFixed(3)}`);
+  const top = !sat() ? 0 : mpp <= 28 ? 12 : mpp <= 110 ? 10 : 8, need = new Set();
+  for (const t of TILES) if (t.T <= top && t.x < x0 + w && t.x + t.s > x0 && t.y < y0 + h && t.y + t.s > y0) need.add(t.id);
+  for (const [id, el] of live) if (!need.has(id)){ el.remove(); live.delete(id); loading.delete(el); }
+  for (const t of TILES) if (need.has(t.id) && !live.has(t.id)){
+    const el = document.createElementNS(NS, 'image'), o = t.s * .004;
+    el.setAttribute('href', 'sat/' + t.id + '.jpg'); el.setAttribute('x', t.x - o); el.setAttribute('y', t.y - o); el.setAttribute('width', t.s + 2 * o); el.setAttribute('height', t.s + 2 * o);
+    el.setAttribute('preserveAspectRatio', 'none'); el.setAttribute('pointer-events', 'none');
+    loading.add(el); el.addEventListener('load', tileDone); el.addEventListener('error', tileDone);
+    svg.querySelector(`#g-sat [data-l="${t.T}"]`).appendChild(el); live.set(t.id, el);
+  }
+  tileTick();
+  $('dim').setAttribute('fill-opacity', sat() ? '.18' : '0');
+  $('mapbox').classList.toggle('plainmap', !sat()); $('credit').hidden = !sat();
+  const ground = px => px * w / W * COS, nice = [.5, 1, 2, 5, 10, 25, 50].find(n => n / ground(1) >= 56) || 50;
+  $('scalebar').style.width = (nice / ground(1)) + 'px'; $('scaletxt').textContent = nice + ' km';
+}
+
+/* ---------- price zones: each locality owns the ground nearer to it than to any other, up to its radius ---------- */
+const CEN = LOC.map(l => xy(l.ll[0], l.ll[1])), RADI = LOC.map(l => (l.r || 2.2) / COS);
+const CELLS = LOC.map((l, i) => {
+  let poly = Array.from({length: 28}, (_, k) => [CEN[i][0] + RADI[i] * Math.cos(k * Math.PI / 14), CEN[i][1] + RADI[i] * Math.sin(k * Math.PI / 14)]);
+  for (let j = 0; j < LOC.length && poly.length; j++){
+    if (j === i) continue; const nx = CEN[j][0] - CEN[i][0], ny = CEN[j][1] - CEN[i][1], d = Math.hypot(nx, ny);
+    if (d > RADI[i] * 2 || d < .05) continue;
+    const k = RADI[i] / (RADI[i] + RADI[j]), qx = CEN[i][0] + nx * k, qy = CEN[i][1] + ny * k, out = [];
+    for (let a = 0; a < poly.length; a++){ const p = poly[a], q = poly[(a + 1) % poly.length], dp = (p[0] - qx) * nx + (p[1] - qy) * ny, dq = (q[0] - qx) * nx + (q[1] - qy) * ny;
+      if (dp <= 0) out.push(p); if ((dp < 0 && dq > 0) || (dp > 0 && dq < 0)){ const t = dp / (dp - dq); out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]); } }
+    poly = out;
+  }
+  return poly;
+});
+
+function label(x, y, t, lp, f, r, c){
+  let dx = 0, dy = -(r + f * .5), a = 'middle';
+  if (lp === 'r'){ dx = r + f * .45; dy = f * .35; a = 'start'; }
+  else if (lp === 'l'){ dx = -(r + f * .45); dy = f * .35; a = 'end'; }
+  else if (lp === 'b'){ dy = r + f * 1.1; }
+  else if (lp === 'c'){ dy = f * .35; }
+  return `<text class="lbl ${c||''}" x="${(x+dx).toFixed(2)}" y="${(y+dy).toFixed(2)}" font-size="${f.toFixed(3)}" text-anchor="${a}" stroke-width="${(f*.3).toFixed(3)}">${esc(t)}</text>`;
+}
+const metroSplit = north => (G.lines.metro || []).filter(s => (s.reduce((a, p) => a + p[0], 0) / s.length > 23.108) === north);
+const geoFor = p => { const g = p.id === 'ring' ? G.lines.ring : p.id === 'dholera_exp' ? G.lines.dholera_exp : p.id === 'hsr' ? G.lines.hsr : p.id === 'metro_p1' ? metroSplit(false) : p.id === 'metro_p2' ? metroSplit(true) : null; return g && g.length ? g : null; };
+
+function over(){
+  const [W, H] = size(), w = S.w, h = w * H / W, px = w / W, f = 11.5 * px, mpp = px * 1000, x0 = S.cx - w / 2, y0 = S.cy - h / 2, so = sat();
+  const vis = (x, y, m = 0) => x > x0 - m && x < x0 + w + m && y > y0 - m && y < y0 + h + m;
+  const sel = S.sel, on = (k, id) => sel && sel.kind === k && String(sel.id) === String(id);
+  let o = '', lab = '';
+  { const hp = $('hatch'), hl = $('hatch-line'); hp.setAttribute('width', 7 * px); hp.setAttribute('height', 7 * px); hl.setAttribute('width', 7 * px); hl.setAttribute('height', 2.2 * px); }
+  if (!so){ const [gx, gy] = xy(23.223, 72.65);
+    o += `<circle cx="0" cy="0" r="10.3" fill="var(--urban)"/><circle cx="${gx}" cy="${gy}" r="3.9" fill="var(--urban)"/><polyline points="${pts(RIVER)}" fill="none" stroke="var(--water)" stroke-width="${Math.max(.45, 3*px)}" stroke-linecap="round" stroke-linejoin="round"/>`; }
+  for (const k of ['trunk', 'motorway']) for (const seg of G.lines[k] || [])
+    o += `<polyline points="${pts(seg)}" fill="none" stroke="${so ? '#fff' : 'var(--muted)'}" stroke-opacity="${so ? .55 : .5}" stroke-width="${(k === 'motorway' ? 1.6 : 1.1) * px}" pointer-events="none"/>`;
+  /* price zones */
+  if (S.type !== 'off') LOC.forEach((l, i) => {
+    const v = val(l, S.type), empty = !l.p.length; if (v == null && !empty) return;
+    const [cx, cy] = CEN[i]; if (!vis(cx, cy, RADI[i])) return;
+    const hot = on('l', i), d = CELLS[i].map(p => p[0].toFixed(2) + ',' + p[1].toFixed(2)).join(' ');
+    /* data confidence: dashed edge = official rate, thick edge = actual sale, hatching = seller-quoted, unverified or few listings */
+    const pe = empty ? null : l.p.find(p => p.t === S.type), bk = pe ? basisShort(L.src[pe.s].k) : '';
+    const edge = bk === 'official' ? `stroke-width="${(hot ? 3 : 2) * px}" stroke-dasharray="${5*px} ${3*px}"` : bk === 'actual sale' ? `stroke-width="${(hot ? 3.5 : 2.6) * px}"` : `stroke-width="${(hot ? 3 : 1) * px}"`;
+    o += empty ? `<polygon data-id="l:${i}" points="${d}" fill="#fff" fill-opacity=".06" stroke="${so ? '#fff' : 'var(--muted)'}" stroke-width="${1.2*px}" stroke-dasharray="${4*px} ${4*px}"/>`
+      : `<polygon data-id="l:${i}" points="${d}" fill="${RAMP[cls(S.type, v)]}" fill-opacity="${hot ? .72 : .46}" stroke="${so ? '#fff' : 'var(--ink)'}" ${edge}/>` +
+        (/seller|unverified|few/.test(bk) ? `<polygon points="${d}" fill="url(#hatch)" pointer-events="none"/>` : '');
+    const bigZone = RADI[i] * 2 / px > 90;
+    if (mpp <= 24 || bigZone || hot){ lab += label(cx, cy - f * .55, l.n, 'c', f * .92, 0, ''); lab += label(cx, cy + f * .6, empty ? 'no price yet' : shortP(v), 'c', empty ? f * .85 : f, 0, empty ? 'pl' : ''); }
+    else if (mpp <= 55 && !empty) lab += label(cx, cy, shortP(v), 'c', f * .9, 0, '');
+  });
+  /* transport projects */
+  if ($('l-lines').checked) for (const p of D.projects){
+    const geo = geoFor(p); if (!p.path && p.kind !== 'ring' && !geo) continue;
+    const hot = on('p', p.id), base = p.kind === 'road' || p.kind === 'ring' ? ['var(--road)', 'var(--sroad)'] : p.kind === 'river' ? ['var(--front)', 'var(--sfront)'] : ['var(--rail)', 'var(--srail)'];
+    const col = hot ? (so ? '#fff' : 'var(--accent)') : base[so ? 1 : 0];
+    const dash = p.status === 'Operational' ? '' : p.status === 'Under construction' ? `stroke-dasharray="${7*px} ${4*px}"` : `stroke-dasharray="${1.5*px} ${4.5*px}"`;
+    const sw = (hot ? 4.5 : p.kind === 'rail' || p.kind === 'road' ? 3 : 2.4) * px, segs = geo || p.path;
+    o += `<g data-id="p:${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}">`;
+    if (!segs){ const [cx, cy] = xy(p.center[0], p.center[1]), r = p.radiusKm / COS;
+      o += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="transparent" stroke-width="${16*px}"/>${so ? `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="${sw + 2.4*px}"/>` : ''}<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" ${dash}/>`;
+    } else for (const seg of segs){ const d = pts(seg);
+      o += `<polyline points="${d}" fill="none" stroke="transparent" stroke-width="${16*px}"/>${so ? `<polyline points="${d}" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="${sw + 2.4*px}" stroke-linecap="round" stroke-linejoin="round"/>` : ''}<polyline points="${d}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" ${dash}/>`; }
+    o += `</g>`;
+  }
+  if ($('l-nodes').checked) for (const p of D.projects){
+    if (p.kind !== 'node') continue;
+    const [x, y] = xy(p.lat, p.lng), r = 5.5 * px, hot = on('p', p.id);
+    o += `<rect data-id="p:${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}" x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" transform="rotate(45 ${x} ${y})" fill="${hot ? '#ffd15c' : '#fff'}" stroke="#111" stroke-width="${1.6*px}"/>`;
+    const t = p.id in SHORT ? SHORT[p.id] : p.name.split(' (')[0];
+    if (t && (mpp <= 70 || hot)) lab += label(x, y, t, 'b', f * .9, r * 1.2, 'pl');
+  }
+  if ($('l-areas').checked) for (const a of D.areas){
+    const [x, y] = xy(a.lat, a.lng), hot = on('a', a.id), r = (hot ? 8.5 : 6.5) * px;
+    if (hot) o += `<circle cx="${x}" cy="${y}" r="${r + 4*px}" fill="none" stroke="#fff" stroke-width="${1.8*px}"/>`;
+    o += `<circle data-id="a:${a.id}" tabindex="0" role="button" aria-label="${esc(a.name)}" cx="${x}" cy="${y}" r="${r}" fill="var(--c${a.corridor})" stroke="#fff" stroke-width="${1.8*px}"/>`;
+    if (hot || mpp > 55 || S.type === 'off') lab += label(x, y, a.short, a.lp, f, r, '');
+  }
+  /* place names from OpenStreetMap */
+  if (G.places.length){
+    const taken = new Set([...D.areas.map(a => a.short.toLowerCase()), ...(S.type === 'off' ? [] : LOC.map(l => l.n.toLowerCase()))]), rank = {c:0, t:1, s:2, v:3}; let n = 0;
+    for (const p of G.places.filter(p => p[3] === 'c' || p[3] === 't' || (p[3] === 's' && mpp <= 45) || (p[3] === 'v' && mpp <= 26)).sort((a, b) => rank[a[3]] - rank[b[3]])){
+      const [x, y] = xy(p[1], p[2]); if (!vis(x, y) || taken.has(p[0].toLowerCase())) continue;
+      const cell = Math.round(x / (95 * px)) + ':' + Math.round(y / (20 * px)); if (taken.has(cell)) continue; taken.add(cell); if (++n > 60) break;
+      lab += label(x, y, p[0], 'c', f * (p[3] === 'v' ? .82 : .9), 0, 'pl');
+    }
+  } else if (mpp > 150) lab += label(15, -3.5, 'AHMEDABAD', 'r', f * .95, 0, 'city');
+  gOver.innerHTML = o + lab;
+  document.querySelectorAll('#presets .btn').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === S.preset));
+  document.querySelectorAll('#types .btn').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === S.type));
+}
+function key(){
+  const el = $('pricekey'); if (S.type === 'off'){ el.innerHTML = '<span class="small muted">Price zones are hidden.</span>'; return; }
+  const b = BREAKS[S.type], t = L.types[S.type], edges = [b.min, ...b.cuts, b.max], n = b.cuts.length + 1;
+  el.innerHTML = `<span class="small"><b>${esc(t.n)}</b>, rupees ${esc(t.of)} · ${b.n} localities with a price · ${esc(L.asof)}</span><div class="legend">` +
+    Array.from({length: n}, (_, k) => `<span><i class="sw" style="background:${RAMP[n < 5 ? Math.round(k * 4 / Math.max(1, n - 1)) : k]}"></i>₹${inr(edges[k])}${k < n - 1 ? '–' + inr(edges[k + 1]) : edges[k] === b.max ? '' : '–' + inr(b.max)}</span>`).join('') +
+    `<span><i class="sw" style="background:transparent;border-style:dashed"></i>no price yet</span></div>` +
+    `<div class="legend"><span><i class="sw" style="background:repeating-linear-gradient(45deg,var(--z3) 0 3px,var(--surface) 3px 5px)"></i>Hatched: seller-quoted, unverified or few listings</span><span><i class="sw" style="border:2px dashed var(--ink)"></i>Dashed edge: official rate</span><span><i class="sw" style="border:2.5px solid var(--ink)"></i>Thick edge: actual sale</span></div>`;
+}
+function draw(){ view(); over(); key(); }
+
+/* ---------- detail panel ---------- */
+const near = (lat, lng, km) => LOC.map(l => [Math.hypot((l.ll[0] - lat) * 110.6, (l.ll[1] - lng) * 102.5), l]).filter(d => d[0] <= km && d[1].p.length).sort((a, b) => a[0] - b[0]);
+const back = `<button type="button" class="chip" data-go="">Back to overview</button>`;
+/* ---------- local development funds (MP fund numbers are live from the government feed; MLA and councillor funds are not published per area) ---------- */
+const FD = window.LWF || null, cr = n => '₹' + (+n).toFixed(2).replace(/\.?0+$/, '') + ' crore', pc = (a, b) => b ? Math.round(100 * a / b) : 0;
+const seatOfLoc = name => FD && Object.entries(FD.locSeat).find(([id, l]) => l.includes(name));
+function fundBlock(seatId, flag){
+  const s = FD && FD.seats[seatId]; if (!s || s.spent == null) return '';
+  const p = pc(s.spent, s.allocated), sp = pc(FD.state.spent, FD.state.allocated), n = FD.state.seats;
+  return `<h4>MP local-area fund (MPLADS)</h4><p><b>${esc(s.name)} seat, MP ${esc(s.mp)}.</b> ${cr(s.spent)} spent of ${cr(s.allocated)} (${p}%) since June 2024. That ranks ${s.rank} of ${n} Gujarat seats for spending. The state average is ${sp}%. Works completed: ${s.doneN} of ${s.recN} recommended (${s.rankDone} of ${n} for completion).</p>
+    <p class="plain"><b>In plain words:</b> each MP may recommend up to ₹5 crore of local works a year, such as roads, drains and school rooms. This seat has used ${p} paise of every rupee available so far, and only ${s.doneN} of ${s.recN} proposed works are finished.</p>
+    ${flag ? `<p class="small muted">${flag === 'approx' ? 'The seat is worked out from assembly segments and may be off at the edges of this area.' : 'The assembly segment for this exact place was not confirmed, so this seat is a best guess.'}</p>` : ''}
+    <p class="small muted">MLA and councillor funds: no figures are published for this area. <button type="button" class="chip" data-jump-sec="funds">What is and is not public</button></p>`;
+}
+const fundForArea = id => { const m = FD && FD.areaSeat[id]; return m ? fundBlock(m[0], m[1]) : (FD ? `<h4>MP local-area fund (MPLADS)</h4><p class="small muted">The Lok Sabha seat for this place was not confirmed yet, so no fund figure is shown.</p>` : ''); };
+const fundForLoc = name => { const m = seatOfLoc(name); return m ? fundBlock(m[0], 'approx') : ''; };
+/* asking price versus official value; skipped when the official figure is farmland class only (not like-for-like with built-up plots) */
+const gapN = l => {
+  const j = l.p.find(p => p.t === 'jan'), ask = l.p.find(p => p.t === 'plot' || p.t === 'farm');
+  if (!j || !ask || /farmland class only/.test(j.note || '')) return null;
+  const n = val(l, ask.t) / val(l, 'jan'); return n >= 1.2 ? n : null;
+};
+const xTxt = n => n >= 10 ? Math.round(n) : n.toFixed(1);
+const gapTxt = l => { const n = gapN(l); return n ? ` <b>Sellers ask about ${xTxt(n)} times the official land value here.</b>` : ''; };
+
+/* ---------- compare (kept in this browser only) ---------- */
+let CMP = []; try { CMP = JSON.parse(localStorage.getItem('lw-compare') || '[]').filter(r => typeof r === 'string').slice(0, 3); } catch (_) {}
+const saveCmp = () => { try { localStorage.setItem('lw-compare', JSON.stringify(CMP)); } catch (_) {} };
+const cmpBtn = ref => { const on = CMP.includes(ref), full = !on && CMP.length >= 3;
+  return `<div class="tools" style="margin:6px 0 2px"><button type="button" class="btn cmpbtn" data-cmp="${ref}" aria-pressed="${on}" ${full ? 'disabled' : ''}>${on ? 'In compare, tap to remove' : 'Add to compare'}</button>${full ? '<span class="small muted">Compare holds three. Remove one first.</span>' : on ? `<a class="small" href="#compare">See comparison</a>` : ''}</div>`; };
+const basisShort = k => /^Official/.test(k) ? 'official' : /^Actual/.test(k) ? 'actual sale' : /Seller/.test(k) ? 'seller-quoted' : /Unverified/.test(k) ? 'unverified' : /few/.test(k) ? 'few listings' : 'asking';
+function panel(){
+  const s = S.sel, el = $('panel');
+  if (!s){
+    el.innerHTML = `<p class="eyebrow">How to read the map</p><h3>Prices and five growth corridors</h3><p class="muted">Darker pink zones cost more per square foot for the property type chosen above the map. Circles are the research areas, coloured by corridor. Lines are transport projects: solid means open, dashed means under construction, dotted means approved or planned. Diamonds are single sites such as factories and stadiums.</p><div class="corr">` +
+      Object.entries(D.corridors).map(([k, c]) => `<div><span class="dot" style="background:var(--c${k})"></span><b>${esc(c.name)}</b><p>${esc(c.why)}</p></div>`).join('') + `</div>`;
+    return;
+  }
+  if (s.kind === 'l'){
+    const l = LOC[s.id], ar = D.areas.map(a => [Math.hypot((a.lat - l.ll[0]) * 110.6, (a.lng - l.ll[1]) * 102.5), a]).sort((a, b) => a[0] - b[0])[0];
+    el.innerHTML = `<p class="eyebrow">${esc(l.z)} · prices as of ${esc(L.asof)}</p><h3>${esc(l.n)}</h3>${cmpBtn('l:' + s.id)}` +
+      (l.p.length ? `<div class="ptable">${l.p.map(p => { const sr = L.src[p.s]; return `<div><div class="row"><span>${esc(L.types[p.t].n)}</span><span class="big">${ftTxt(p)} <span class="small muted" style="font-weight:400">/ sq ft</span></span></div>
+        <div class="row small muted"><span>${kpill(sr.k)}${p.ch != null ? ` · ${p.ch > 0 ? '+' : ''}${p.ch}% in 5 years` : ''}</span><span class="num">${esc(rawTxt(p))}</span></div>
+        ${p.note ? `<p class="small">${esc(p.note)}</p>` : ''}<p class="srcs"><a href="${sr.u}" target="_blank" rel="noopener">${esc(sr.t)}</a></p></div>`; }).join('')}</div>
+        <p class="plain"><b>In plain words:</b> an asking price is what sellers hope to get. An official rate or an actual sale is firmer. All figures are per square foot so that flats, plots and farmland can be compared side by side.${gapTxt(l)}</p>`
+        : `<p class="muted">No price has been collected for this place yet. It is on the list for a later weekly update.</p>`) +
+      fundForLoc(l.n) +
+      (ar[0] <= 9 ? `<h4>Research area</h4><ul class="drv"><li><button type="button" data-go="a:${ar[1].id}"><span><span class="dot" style="background:var(--c${ar[1].corridor})"></span> ${esc(ar[1].name)}</span><span class="muted small">${esc(ar[1].stage)}</span></button></li></ul>` : '') +
+      `<p class="small" style="margin-top:10px"><a href="${gmaps(l.ll[0], l.ll[1], 15)}" target="_blank" rel="noopener">Closer satellite view in Google Maps</a> · ${back}</p>`;
+  } else if (s.kind === 'a'){
+    const a = A[s.id], c = D.corridors[a.corridor], nb = near(a.lat, a.lng, 7).slice(0, 5);
+    el.innerHTML = `<p class="eyebrow"><span class="dot" style="background:var(--c${a.corridor})"></span>${esc(c.name)}</p><h3>${esc(a.name)}</h3>${cmpBtn('a:' + a.id)}
+      <dl class="facts"><dt>Stage</dt><dd>${esc(a.stage)}</dd><dt>Price</dt><dd>${esc(a.price)}${a.basis ? `<br><span class="muted small">${esc(a.basis)}</span>` : ''}</dd>
+      <dt>You can buy</dt><dd>${fmt(a.types)}</dd><dt>Distance</dt><dd>${kmFromCentre(a)} km from city centre</dd><dt>Research</dt><dd>${esc(a.status)}</dd></dl>
+      <h4>What is happening</h4><p>${fmt(a.summary)}</p><p class="plain"><b>In plain words:</b> ${fmt(a.plain)}</p>
+      ${nb.length ? `<h4>Prices nearby, per sq ft</h4><ul class="drv">${nb.map(([d, l]) => `<li><button type="button" data-go="l:${l.i}"><span>${esc(l.n)}</span><span class="muted small num">${l.p.slice(0, 2).map(p => L.types[p.t].n.split(' ')[0] + ' ' + ftTxt(p)).join(' · ')}</span></button></li>`).join('')}</ul>` : ''}
+      ${fundForArea(a.id)}
+      <h4>Projects driving it</h4><ul class="drv">${a.drivers.map(id => `<li><button type="button" data-go="p:${id}"><span>${esc(P[id].name)}</span>${pill(P[id].status)}</button></li>`).join('')}</ul>
+      <h4>Risks</h4><p>${fmt(a.risks)}</p><h4>Next check</h4><p>${fmt(a.next)}</p>
+      <p class="small" style="margin-top:10px"><a href="${gmaps(a.lat, a.lng, 14)}" target="_blank" rel="noopener">Closer satellite view in Google Maps</a> · ${back}</p>${srcs(a.src)}`;
+  } else {
+    const p = P[s.id], hit = D.areas.filter(a => a.drivers.includes(p.id));
+    el.innerHTML = `<p class="eyebrow">${KIND[p.kind]} ${pill(p.status)}</p><h3>${esc(p.name)}</h3>
+      <dl class="facts"><dt>Key date</dt><dd>${esc(p.date)}</dd></dl>
+      <h4>Details</h4><p>${fmt(p.detail)}</p><p class="plain"><b>In plain words:</b> ${fmt(p.plain)}</p>
+      ${hit.length ? `<h4>Areas it affects</h4><ul class="drv">${hit.map(a => `<li><button type="button" data-go="a:${a.id}"><span><span class="dot" style="background:var(--c${a.corridor})"></span> ${esc(a.name)}</span><span class="muted small">${esc(a.stage)}</span></button></li>`).join('')}</ul>` : ''}
+      <p class="small" style="margin-top:10px">${p.lat ? `<a href="${gmaps(p.lat, p.lng, 14)}" target="_blank" rel="noopener">Closer satellite view in Google Maps</a> · ` : ''}${back}</p>${srcs(p.src)}`;
+  }
+}
+const narrow = () => matchMedia('(max-width: 860px)').matches;
+const SHEETBAR = `<div class="sheetbar"><i class="grip" aria-hidden="true"></i><span><button type="button" class="btn" data-sheet="full">Expand</button><button type="button" class="btn" data-go="">Close</button></span></div>`;
+function select(ref, centre){
+  const pn = $('panel');
+  if (!ref){ S.sel = null; } else {
+    const [kind, id] = ref.split(':'), it = kind === 'a' ? A[id] : kind === 'p' ? P[id] : LOC[id]; if (!it) return;
+    S.sel = {kind, id};
+    if (kind === 'l' && val(it, S.type) == null && it.p.length) S.type = it.p[0].t;
+    const pt = kind === 'l' ? it.ll : it.lat ? [it.lat, it.lng] : it.center ? it.center : it.path ? it.path[0][Math.floor(it.path[0].length / 2)] : null;
+    if (pt){
+      const [x, y] = xy(pt[0], pt[1]);
+      if (centre){ S.w = Math.min(S.w, kind === 'l' ? 26 : 75); S.cx = x; S.cy = y; S.preset = ''; }
+      /* on phones the sheet covers the lower half of the map, so keep the chosen place in the upper part */
+      if (narrow()){ const [W, H] = size(), h = S.w * H / W; if (centre || y > S.cy - h * .1){ S.cy = y + h * .22; S.preset = ''; } }
+    }
+  }
+  const open = !!S.sel && narrow();
+  pn.classList.toggle('open', open); if (!open) pn.classList.remove('full');
+  draw(); panel();
+  if (S.sel){ pn.insertAdjacentHTML('afterbegin', SHEETBAR); if (open) pn.scrollTop = 0; }
+  setHash(S.sel ? R2H[S.sel.kind + ':' + S.sel.id] || 'map' : 'map');
+}
+function go(ref){ select(ref, true); (narrow() ? $('mapbox') : $('map')).scrollIntoView({block:'start'}); }
+
+/* ---------- static sections ---------- */
+const refChip = r => { const it = A[r] ? ['a', A[r].short] : P[r] ? ['p', P[r].name.split(' (')[0]] : null; return it ? `<button type="button" class="chip" data-jump="${it[0]}:${r}">${esc(it[1])}</button>` : ''; };
+const issueHtml = (is, i) => `<header><span class="when">${i === 0 ? 'Latest · ' : ''}Week of ${date(is.date)}</span><h3>${esc(is.title)}</h3><p class="muted">${fmt(is.lead)}</p></header>` +
+  is.items.map((it, k) => `<article class="item"${i === 0 && k >= 3 ? ' hidden data-more' : ''}><span class="when">${esc(it.when)}</span><h3>${esc(it.h)}</h3><p>${fmt(it.body)}</p><p class="plain"><b>In plain words:</b> ${fmt(it.plain)}</p>${it.refs.length ? `<div class="chips"><span class="small muted">Show on map:</span>${it.refs.map(refChip).join('')}</div>` : ''}${srcs(it.src)}</article>`).join('') +
+  (i === 0 && is.items.length > 3 ? `<div class="nextlist"><button type="button" class="btn" data-more-btn>Show all ${is.items.length} items this week</button></div>` : '') +
+  (is.next && is.next.length ? `<div class="nextlist"><h4 style="margin-top:0">To check next week</h4><ul>${is.next.map(n => `<li>${fmt(n)}</li>`).join('')}</ul></div>` : '');
+$('briefbox').innerHTML = D.issues.map((is, i) => i === 0 ? issueHtml(is, 0) : `<details class="old"><summary>Week of ${date(is.date)}: ${esc(is.title)}</summary>${issueHtml(is, i)}</details>`).join('');
+$('m-issue').textContent = `Issue ${D.issues.length} · updated ${date(D.updated)}`;
+$('findings').innerHTML = (D.findings || []).map(f => `<li>${fmt(f.t)}${(f.refs || []).map(refChip).join('')}</li>`).join('');
+{ /* highlight the section in view on the sticky bar */
+  const links = [...document.querySelectorAll('.secin a')];
+  const io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) links.forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + e.target.id ? 'true' : 'false')); }, {rootMargin: '-35% 0px -60% 0px'});
+  links.forEach(a => { const s = $(a.getAttribute('href').slice(1)); if (s) io.observe(s); });
+}
+$('t-areas').innerHTML = D.areas.map(a => `<tr class="pick" data-jump="a:${a.id}" tabindex="0"><td><span class="dot" style="background:var(--c${a.corridor})"></span>${esc(a.name)}</td><td>${esc(a.stage)}</td><td class="num">${kmFromCentre(a)}</td><td>${esc(a.price)}</td><td>${fmt(a.types)}</td><td>${esc(a.status)}</td></tr>`).join('');
+$('t-proj').innerHTML = D.projects.map(p => `<tr class="pick" data-jump="p:${p.id}" tabindex="0"><td>${esc(p.name)}</td><td>${pill(p.status)}</td><td>${esc(p.date)}</td><td>${fmt(p.plain)}</td></tr>`).join('');
+$('prices-note').textContent = `${L.note} ${LOC.filter(l => l.p.length).length} localities, as of ${L.asof}. Select a row to open it on the map. A dash means no figure has been found yet.`;
+$('t-ph').innerHTML = `<tr><th>Locality</th>${TYPES.map(t => `<th class="num">${esc(L.types[t].n)}</th>`).join('')}</tr>`;
+{ let h = '', z = ''; const zi = [...new Set(LOC.map(l => l.z))];
+  for (const l of [...LOC].sort((a, b) => zi.indexOf(a.z) - zi.indexOf(b.z) || (val(b, 'flat') || 0) - (val(a, 'flat') || 0))){
+    if (l.z !== z){ z = l.z; h += `<tr class="grp"><td colspan="${TYPES.length + 1}">${esc(z)}</td></tr>`; }
+    h += `<tr class="pick" data-jump="l:${l.i}" tabindex="0"><td>${esc(l.n)}</td>${TYPES.map(t => { const p = l.p.find(p => p.t === t); return `<td class="num">${p ? ftTxt(p) : '–'}</td>`; }).join('')}</tr>`; }
+  $('t-prices').innerHTML = h; }
+if (FD && FD.state.spent){
+  const ar = id => D.areas.filter(a => (FD.areaSeat[a.id] || [])[0] === id).map(a => a.short).join(', ') || '–';
+  $('funds-note').textContent = `Each MP can recommend up to ₹5 crore of local works a year, and MLAs and city councillors have funds of their own. In Gujarat's 26 Lok Sabha seats, ${cr(FD.state.spent)} of ${cr(FD.state.allocated)} (${pc(FD.state.spent, FD.state.allocated)}%) has been spent or committed to completed and ongoing works since June 2024. The national figure is ${pc(FD.national.spent, FD.national.allocated)}%. Source: the government's public MPLADS dashboard, read on ${date(FD.asof)}. Select any map area to see its seat.`;
+  $('t-funds').innerHTML = Object.entries(FD.seats).sort((a, b) => pc(a[1].spent, a[1].allocated) - pc(b[1].spent, b[1].allocated)).map(([id, s]) => `<tr><td><b>${esc(s.name)}</b><br><span class="small muted">${esc(s.mp)} · ${esc(s.covers)}</span></td><td class="num">${cr(s.allocated)}</td><td class="num">${cr(s.spent)}</td><td class="num">${pc(s.spent, s.allocated)}%</td><td class="num">${s.rank} of ${FD.state.seats}</td><td class="num">${s.doneN} / ${s.recN}</td><td>${esc(ar(id))}</td></tr>`).join('');
+  $('funds-cards').innerHTML = `<article><span class="when">${esc(FD.mla.src)}</span><h3>MLA fund: used, but not shown by area</h3><p>${esc(FD.mla.perMla)} ${esc(FD.mla.past)}</p><p class="plain"><b>What is public:</b> ${esc(FD.mla.public)}</p><div class="chips">${kpill('Unverified for current term')}</div></article>
+    <article><span class="when">${esc(FD.councillor.src)}</span><h3>City councillor fund: budget known, spending not</h3><p>${esc(FD.councillor.perCouncillor)}</p><p class="plain"><b>What is public:</b> ${esc(FD.councillor.public)}</p><div class="chips">${kpill('Unverified')}</div></article>
+    <article><span class="when">How to get the missing data</span><h3>Ask the offices that hold it</h3><p>A Right to Information request to the District Planning Office (for MLA funds) or to the Ahmedabad Municipal Corporation (for ward funds) will return works, amounts and dates by constituency or ward. The researchers behind the 2022 report did exactly this because the figures are not on any government website.</p><p class="plain"><b>In plain words:</b> anyone can file this request for a small fee, and a local lawyer or volunteer can do it for you.</p></article>`;
+  document.addEventListener('click', e => { const b = e.target.closest('[data-jump-sec]'); if (b) $(b.dataset.jumpSec).scrollIntoView({block: 'start'}); });
+}
+/* ---------- page link: plain #name only (place-…, area-…, project-…, compare--a--b) ---------- */
+const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const H2R = {}, R2H = {};
+LOC.forEach(l => { const h = 'place-' + slug(l.n); H2R[h] = 'l:' + l.i; R2H['l:' + l.i] = h; });
+D.areas.forEach(a => { const h = 'area-' + slug(a.id); H2R[h] = 'a:' + a.id; R2H['a:' + a.id] = h; });
+D.projects.forEach(p => { const h = 'project-' + slug(p.id); H2R[h] = 'p:' + p.id; R2H['p:' + p.id] = h; });
+let curHash = '';
+const setHash = h => { if (!h || h === curHash) return; curHash = h; try { history.replaceState(null, '', '#' + h); } catch (_) { try { location.hash = h; } catch (__) {} } };
+function applyHash(){
+  let h = ''; try { h = decodeURIComponent(location.hash.slice(1)); } catch (_) {}
+  if (!h || h === curHash) return; curHash = h;
+  if (H2R[h]){ go(H2R[h]); return; }
+  if (h.startsWith('compare--')){ CMP = h.split('--').slice(1).map(x => H2R[x]).filter(Boolean).slice(0, 3); saveCmp(); renderCompare(); $('compare').scrollIntoView({block: 'start'}); return; }
+  if (narrow()) $('panel').classList.remove('open', 'full');
+}
+
+/* ---------- compare table ---------- */
+function cmpInfo(ref){
+  const [k, id] = ref.split(':');
+  if (k === 'l'){ const l = LOC[id]; if (!l) return null;
+    const ar = D.areas.map(a => [Math.hypot((a.lat - l.ll[0]) * 110.6, (a.lng - l.ll[1]) * 102.5), a]).sort((a, b) => a[0] - b[0])[0], sm = seatOfLoc(l.n), g = gapN(l);
+    return {ref, name: l.n, sub: l.z, km: kmFromCentre({lat: l.ll[0], lng: l.ll[1]}), area: ar[0] <= 9 ? ar[1] : null, seat: sm ? sm[0] : null, gap: g ? [g, ''] : null,
+      price: t => { const p = l.p.find(p => p.t === t); return p ? [ftTxt(p), basisShort(L.src[p.s].k)] : null; }};
+  }
+  if (k === 'a'){ const a = A[id]; if (!a) return null; const nb = near(a.lat, a.lng, 8), gl = nb.find(([d, l]) => gapN(l));
+    return {ref, name: a.name, sub: D.corridors[a.corridor].name.split(':')[0] + ' corridor', km: kmFromCentre(a), area: a, seat: (FD && FD.areaSeat[a.id] || [])[0] || null, gap: gl ? [gapN(gl[1]), gl[1].n] : null,
+      price: t => { const f = nb.find(([d, l]) => l.p.some(p => p.t === t)); if (!f) return null; const p = f[1].p.find(p => p.t === t); return [ftTxt(p), basisShort(L.src[p.s].k) + ', ' + f[1].n]; }};
+  }
+  return null;
+}
+function renderCompare(){
+  const cols = CMP.map(cmpInfo).filter(Boolean), dash = '<span class="muted">–</span>';
+  $('cmp-n').textContent = cols.length || '';
+  if (!cols.length){ $('cmp-body').innerHTML = `<div class="empty"><p>Nothing to compare yet. Open any place on the map and choose "Add to compare".</p><div class="tools" style="margin-top:10px"><button type="button" class="btn" data-cmp-try>Try Shela, GIFT City and Dholera</button></div></div>`; return; }
+  const rows = [
+    ['Where', c => `${esc(c.sub)}<span class="small muted">${c.km} km from the city centre</span>`],
+    ...TYPES.map(t => [L.types[t].n, c => { const v = c.price(t); return v ? `<b class="num">${v[0]}</b><span class="small muted">${esc(v[1])}</span>` : dash; }]),
+    ['Sellers ask vs official', c => c.gap ? `<b>${xTxt(c.gap[0])} times</b>${c.gap[1] ? `<span class="small muted">at ${esc(c.gap[1])}</span>` : ''}` : dash],
+    ['Stage', c => c.area ? `${esc(c.area.stage)}<span class="small muted">${esc(c.area.short)} research area</span>` : dash],
+    ['Projects nearby', c => c.area ? c.area.drivers.slice(0, 3).map(id => `${esc(P[id].name.split(' (')[0])}<span class="small muted">${esc(P[id].status)}</span>`).join('') : dash],
+    ['MP fund used', c => { const s = c.seat && FD && FD.seats[c.seat]; return s ? `<b>${pc(s.spent, s.allocated)}%</b><span class="small muted">${esc(s.name)} seat, ${s.doneN} of ${s.recN} works done</span>` : '<span class="muted">seat not confirmed</span>'; }],
+    ['Risks', c => c.area ? `<span class="small">${fmt(c.area.risks)}</span>` : dash]
+  ];
+  $('cmp-body').innerHTML = `<div class="tablewrap"><table class="cmp"><thead><tr><th>Place</th>${cols.map(c => `<th>${esc(c.name)}<button type="button" data-cmp-rm="${c.ref}" aria-label="Remove ${esc(c.name)} from compare">✕</button></th>`).join('')}</tr></thead>
+    <tbody>${rows.map(([h, f]) => `<tr><td>${esc(h)}</td>${cols.map(c => `<td>${f(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <div class="tools" style="margin-top:10px"><button type="button" class="btn" data-cmp-link>Put this comparison in the page link</button><button type="button" class="btn" data-cmp-clear>Clear</button><span class="small muted" id="cmp-msg" aria-live="polite"></span></div>`;
+}
+document.addEventListener('click', e => {
+  const cb = e.target.closest('[data-cmp]');
+  if (cb){ const r = cb.dataset.cmp; CMP = CMP.includes(r) ? CMP.filter(x => x !== r) : [...CMP, r].slice(0, 3); saveCmp(); renderCompare(); cb.parentElement.outerHTML = cmpBtn(r); return; }
+  const rm = e.target.closest('[data-cmp-rm]'); if (rm){ CMP = CMP.filter(x => x !== rm.dataset.cmpRm); saveCmp(); renderCompare(); return; }
+  if (e.target.closest('[data-cmp-clear]')){ CMP = []; saveCmp(); renderCompare(); return; }
+  if (e.target.closest('[data-cmp-try]')){ const sh = LOC.find(l => l.n === 'Shela'); CMP = [sh ? 'l:' + sh.i : null, 'a:gift_area', 'a:dholera'].filter(r => r && cmpInfo(r)); saveCmp(); renderCompare(); return; }
+  if (e.target.closest('[data-cmp-link]')){ setHash('compare--' + CMP.map(r => R2H[r]).join('--')); $('cmp-msg').textContent = 'The page link now holds this comparison. Use Share, then Copy link, to send it.'; return; }
+  const a = e.target.closest('a[href="#compare"]'); if (a && narrow()) $('panel').classList.remove('open', 'full');
+});
+
+/* ---------- find a place, filter the price table ---------- */
+$('find-list').innerHTML = [...LOC.map(l => l.n), ...D.areas.map(a => a.name)].map(n => `<option value="${esc(n)}"></option>`).join('');
+function findPlace(){
+  const q = $('find').value.trim().toLowerCase(); if (!q) return;
+  const lo = LOC.find(l => l.n.toLowerCase() === q) || null, ar = D.areas.find(a => a.name.toLowerCase() === q || a.short.toLowerCase() === q) || null;
+  const lo2 = lo || ar ? null : LOC.find(l => l.n.toLowerCase().startsWith(q)) || LOC.find(l => l.n.toLowerCase().includes(q));
+  const ar2 = lo || ar || lo2 ? null : D.areas.find(a => a.name.toLowerCase().includes(q));
+  const ref = lo ? 'l:' + lo.i : ar ? 'a:' + ar.id : lo2 ? 'l:' + lo2.i : ar2 ? 'a:' + ar2.id : null;
+  if (ref){ go(ref); $('find').blur(); } else $('find').setCustomValidity('No place by that name yet'), $('find').reportValidity();
+}
+$('find').addEventListener('change', findPlace);
+$('find').addEventListener('keydown', e => { $('find').setCustomValidity(''); if (e.key === 'Enter'){ e.preventDefault(); findPlace(); } });
+$('pfind').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase(); let grp = null, any = false, zm = false;
+  const close = () => { if (grp) grp.hidden = !!q && !any; };
+  for (const tr of $('t-prices').rows){
+    if (tr.classList.contains('grp')){ close(); grp = tr; any = false; zm = !!q && tr.textContent.toLowerCase().includes(q); continue; }
+    const show = !q || zm || tr.cells[0].textContent.toLowerCase().includes(q); tr.hidden = !show; if (show) any = true;
+  }
+  close();
+});
+
+$('claims').innerHTML = L.claims.map(c => `<article><span class="when">${esc(c.who)}</span><h3>${esc(c.h)}</h3><p>${esc(c.body)}</p><p class="plain"><b>What a check found:</b> ${esc(c.check)}</p><div class="chips">${kpill(c.status)}${c.where.map(refChip).join('')}</div></article>`).join('');
+$('t-cov').innerHTML = L.coverage.map(c => `<tr><td>${esc(c.n)}</td><td>${esc(c.k)}</td><td>${esc(c.st)}</td><td>${esc(c.got)}</td></tr>`).join('');
+$('gloss').innerHTML = D.glossary.map(g => `<div><dt>${esc(g.t)}</dt><dd>${esc(g.d)}</dd></div>`).join('');
+$('srclist').innerHTML = [...Object.values(D.sources), ...Object.values(L.src)].map(s => `<li><a href="${s.u}" target="_blank" rel="noopener">${esc(s.t)}</a></li>`).join('');
+if (D.sheetUrl) $('sheetlink').innerHTML = `The full comparison is in <a href="${D.sheetUrl}" target="_blank" rel="noopener">this Google Sheet</a>.`;
+$('presets').insertAdjacentHTML('beforeend', PRESETS.map(p => `<button type="button" class="btn" data-p="${p.id}">${p.name}</button>`).join(''));
+$('types').insertAdjacentHTML('beforeend', TYPES.map(t => `<button type="button" class="btn" data-t="${t}" ${BREAKS[t].n ? '' : 'disabled'}>${esc(L.types[t].n)} (${BREAKS[t].n})</button>`).join('') + `<button type="button" class="btn" data-t="off">Hide prices</button>`);
+$('legend').innerHTML = Object.entries(D.corridors).map(([k, c]) => `<span><i class="dot" style="background:var(--c${k})"></i>${esc(c.name.split(':')[0])}</span>`).join('') +
+  `<span><i class="ln" style="border-color:var(--rail)"></i>Metro and rail</span><span><i class="ln" style="border-color:var(--road)"></i>Roads</span><span><i class="ln" style="border-color:var(--front)"></i>Riverfront</span><span><i class="ln" style="border-color:var(--muted);border-top-style:dashed"></i>Under construction</span><span><i class="ln" style="border-color:var(--muted);border-top-style:dotted"></i>Approved or planned</span><span><i class="dia"></i>Site or factory</span>`;
+
+/* ---------- map gestures: drag, pinch, buttons ---------- */
+const ptr = new Map(), clamp = w => Math.min(280, Math.max(5, w)); let ges = null, moved = false;
+const begin = () => { ges = {cx: S.cx, cy: S.cy, w: S.w, p: [...ptr.values()].map(a => a.slice())}; };
+svg.addEventListener('pointerdown', e => { try { svg.setPointerCapture(e.pointerId); } catch (_) {} ptr.set(e.pointerId, [e.clientX, e.clientY]); if (ptr.size === 1) moved = false; begin(); });
+svg.addEventListener('pointermove', e => {
+  if (!ptr.has(e.pointerId) || !ges) return; ptr.set(e.pointerId, [e.clientX, e.clientY]);
+  const p = [...ptr.values()], [W, H] = size(), g = ges;
+  if (p.length === 1){ const dx = p[0][0] - g.p[0][0], dy = p[0][1] - g.p[0][1]; if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
+    if (moved){ svg.classList.add('drag'); S.cx = g.cx - dx * g.w / W; S.cy = g.cy - dy * g.w / W; S.preset = ''; view(); } }
+  else if (p.length === 2 && g.p.length === 2){ moved = true; const r = svg.getBoundingClientRect(), dist = q => Math.hypot(q[0][0] - q[1][0], q[0][1] - q[1][1]), mid = q => [(q[0][0] + q[1][0]) / 2 - r.left - W / 2, (q[0][1] + q[1][1]) / 2 - r.top - H / 2];
+    const w = clamp(g.w * dist(g.p) / Math.max(1, dist(p))), m0 = mid(g.p), m1 = mid(p), wx = g.cx + m0[0] * g.w / W, wy = g.cy + m0[1] * g.w / W;
+    S.w = w; S.cx = wx - m1[0] * w / W; S.cy = wy - m1[1] * w / W; S.preset = ''; view(); }
+});
+const finish = e => { if (!ptr.has(e.pointerId)) return; ptr.delete(e.pointerId);
+  if (ptr.size){ begin(); return; } svg.classList.remove('drag');
+  if (moved){ over(); return; }
+  const t = document.elementFromPoint(e.clientX, e.clientY), hit = t && t.closest ? t.closest('[data-id]') : null; select(hit ? hit.dataset.id : null); };
+svg.addEventListener('pointerup', finish); svg.addEventListener('pointercancel', finish);
+svg.addEventListener('wheel', e => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); const r = svg.getBoundingClientRect(), [W, H] = size(), k = Math.exp(e.deltaY * .01), w = clamp(S.w * k), ox = e.clientX - r.left - W / 2, oy = e.clientY - r.top - H / 2;
+  S.cx += ox * (S.w - w) / W; S.cy += oy * (S.w - w) / W; S.w = w; S.preset = ''; draw(); }, {passive: false});
+svg.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ const t = e.target.closest('[data-id]'); if (t){ e.preventDefault(); select(t.dataset.id); } } });
+$('presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; S.preset = b.dataset.p; fit(PRESETS.find(p => p.id === S.preset).box); draw(); });
+$('types').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b || b.disabled) return; S.type = b.dataset.t; draw(); });
+const zoom = k => { S.w = clamp(S.w * k); S.preset = ''; draw(); };
+$('zin').onclick = () => zoom(.6); $('zout').onclick = () => zoom(1 / .6);
+['l-sat', 'l-areas', 'l-lines', 'l-nodes'].forEach(id => $(id).onchange = draw);
+document.addEventListener('click', e => {
+  const term = e.target.closest('.term');
+  if (term){ const g = D.glossary.find(g => g.k.toLowerCase() === term.dataset.k.toLowerCase()); if (g){ $('def-t').textContent = g.t; $('def-d').textContent = g.d; $('defbar').hidden = false; } return; }
+  const g2 = e.target.closest('[data-go]'); if (g2){ select(g2.dataset.go || null, true); return; }
+  const j = e.target.closest('[data-jump]'); if (j) go(j.dataset.jump);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('defbar').hidden = true; if (e.key === 'Enter' && e.target.matches('tr[data-jump]')) go(e.target.dataset.jump); });
+$('def-x').onclick = () => $('defbar').hidden = true;
+document.addEventListener('click', e => {
+  const sb = e.target.closest('[data-sheet]'); if (sb){ const full = $('panel').classList.toggle('full'); sb.textContent = full ? 'Shrink' : 'Expand'; return; }
+  const mb = e.target.closest('[data-more-btn]'); if (mb){ document.querySelectorAll('[data-more]').forEach(x => x.hidden = false); mb.parentElement.remove(); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('panel').classList.contains('open')) select(null); });
+window.addEventListener('resize', () => { if (!narrow()) $('panel').classList.remove('open', 'full'); else if (S.sel) $('panel').classList.add('open'); if (S.preset) fit(PRESETS.find(p => p.id === S.preset).box); draw(); });
+
+fit(PRESETS[0].box); draw(); panel();
+renderCompare(); applyHash(); window.addEventListener('hashchange', applyHash);
+})();
+</script>
